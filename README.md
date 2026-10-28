@@ -4,7 +4,7 @@ Rebuild of [ieef.or.id](https://ieef.or.id) for the Institute for Energy, Econom
 
 - **Stack:** [Astro](https://astro.build) (static HTML, free and open source) · Plus Jakarta Sans · Supabase for content and the team console (from step 2)
 - **Languages:** English at `/`, Bahasa Indonesia at `/id/` with an EN/ID toggle on every page
-- **Hosting:** Cloudflare Pages (free), password-protected preview until launch
+- **Hosting:** Cloudflare Workers (free tier), password-protected preview until launch
 
 ## Run locally
 
@@ -14,18 +14,24 @@ npm run dev      # http://localhost:4321
 npm run build    # outputs static site to dist/
 ```
 
-## Deploy (Cloudflare Pages)
+## Deploy (Cloudflare Workers)
 
-| Setting | Value |
+The site deploys as a Cloudflare Worker with static assets (`wrangler.jsonc`). Every push to `main` rebuilds automatically.
+
+| Setting (Worker → Settings → Build) | Value |
 |---|---|
-| Framework preset | Astro |
 | Build command | `npm run build` |
-| Output directory | `dist` |
-| Node version | 22 (`.nvmrc`) |
-| Env var (preview) | `PREVIEW_PASSWORD` = the team password |
-| Env var (launch) | remove `PREVIEW_PASSWORD`, set `PUBLIC_INDEXABLE=true` |
+| Deploy command | `npx wrangler deploy` |
+| Root directory | `/` |
 
-`functions/_middleware.js` asks for the password whenever `PREVIEW_PASSWORD` is set. Any username works; only the password is checked.
+| Variable (Worker → Settings → Variables and Secrets) | When |
+|---|---|
+| `PREVIEW_PASSWORD` (type: Secret) | Preview: the team password. Any username works. |
+| `PUBLIC_INDEXABLE=true` (build variable) | Launch only, together with deleting `PREVIEW_PASSWORD` |
+
+`worker/index.js` checks the password on every request, then serves the built files from `dist/`. `keep_vars` in `wrangler.jsonc` keeps dashboard variables across deploys.
+
+Test locally: `npm run build && npx wrangler dev --var PREVIEW_PASSWORD:test`
 
 ## Project layout
 
@@ -40,7 +46,8 @@ src/
   data/home.ts          homepage content (moves to Supabase in step 2)
   assets/art/           original painted artwork (generated for IEEF)
   assets/brand/         IEEF logo (colour + white)
-functions/_middleware.js  preview password gate
+worker/index.js         preview password gate + static file server
+wrangler.jsonc          Cloudflare deploy config
 ```
 
 URLs keep the current site's slugs (`/about-us`, `/policy-brief`, `/research-publication`, `/news-and-article`, `/career`, `/contact-us`, `/dashboard`) so existing links keep working.
