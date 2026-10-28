@@ -13,5 +13,7 @@
   },
   // keep variables set in the Cloudflare dashboard (e.g. PREVIEW_PASSWORD) between deploys
   "keep_vars": true,
+  // ping Supabase every 3 days so the free project never pauses
+  "triggers": { "crons": ["17 3 */3 * *"] },
   "observability": { "enabled": true }
 }

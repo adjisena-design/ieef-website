@@ -1,5 +1,4 @@
-// Homepage content for step 1. In step 2 the lists (briefs, research, news, partners)
-// move to Supabase so the team can update them from the console.
+// Fixed homepage copy. Lists (news, briefs, research, partners) come from src/lib/content.ts.
 import type { Lang } from '../i18n/ui';
 
 type L = Record<Lang, string>;
@@ -17,12 +16,6 @@ export const hero = {
   } as L,
 };
 
-// TODO(step 2): confirm counts from the exported content.
-export const stats = [
-  { value: '40+', label: { en: 'Publications', id: 'Publikasi' } as L },
-  { value: '4', label: { en: 'Live dashboards', id: 'Dasbor interaktif' } as L },
-  { value: '30+', label: { en: 'Partners', id: 'Mitra' } as L },
-];
 
 export const about = {
   eyebrow: { en: 'What defines us', id: 'Siapa kami' } as L,
@@ -69,37 +62,9 @@ export const pubsSection = {
   researchLabel: { en: 'Research publications', id: 'Publikasi riset' } as L,
 };
 
-// Publication titles stay in their original language.
-export const featuredBrief = {
-  title: 'Strengthening Indonesia’s Path to 8% Growth: Leveraging Multiplier Effects from Energy Infrastructure Investment',
-  summary: {
-    en: 'How public investment in energy infrastructure multiplies into wider economic activity, and what that means for reaching 8% growth.',
-    id: 'Bagaimana investasi publik di infrastruktur energi berlipat ganda menjadi aktivitas ekonomi yang lebih luas, dan artinya bagi target pertumbuhan 8%.',
-  } as L,
-  href: '/policy-brief',
-};
 
-export const briefs = [
-  'From Fragmentation to Credibility: Indonesia’s REC Market in Comparison with Singapore',
-  'When Growth Is Not Enough: Building Inclusive and Quality Growth in West Java',
-];
 
-export const research = [
-  { year: 2024, title: 'Switching from LPG to electricity in Indonesia: a study in the Java Bali grid' },
-  { year: 2024, title: 'The Effect of GDP and Exchange Rate on Import of Photovoltaic Cells in Indonesia' },
-  { year: 2023, title: 'Long-Term Scenarios of Indonesia Power Sector to Achieve Nationally Determined Contribution (NDC) 2060' },
-];
 
-export const news = {
-  date: '2026-09-30',
-  title: { en: 'Indonesia’s 2027 State Budget on Kompas Bisnis', id: 'APBN 2027 Indonesia di Kompas Bisnis' } as L,
-  summary: { en: 'Spending quality, not size, should define the 2027 State Budget.', id: 'Kualitas belanja, bukan besarnya, yang seharusnya menentukan APBN 2027.' } as L,
-  href: '/news-and-article',
-};
 
 export const partnersTitle = { en: 'Our network & collaboration', id: 'Jejaring & kolaborasi kami' } as L;
 
-// TODO(step 2): replace with logos exported from the current site.
-export const partners = ['Bank Indonesia', 'Asian Development Bank', 'Kementerian ESDM', 'PLN', 'PLN Puslitbang', 'Pertamina', 'PGN',
-  'Bukit Asam', 'Freeport Indonesia', 'Hutama Karya', 'Indobara', 'KPMG', 'McKinsey & Company', 'BCG', 'ASEAN Centre for Energy',
-  'IESR', 'IAEE', 'Universitas Indonesia', 'UGM', 'UPI', 'ITPLN', 'University of Dundee', 'LAPI ITB', 'Asahi Glass Foundation'];

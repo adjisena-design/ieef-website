@@ -1,0 +1,67 @@
+{
+  "vision": "To become a national and regional reference institution in research, policy, and financing of a fair and sustainable energy transition",
+  "mission": [
+    "Integrating energy, economic, and financial research into public policy.",
+    "Providing financing solutions for transition projects and policies.",
+    "Strengthening institutional capacity and governance for energy transition.",
+    "Becoming a strategic partner for the government, state-owned enterprises, and international organizations."
+  ],
+  "expertise": [
+    {
+      "title": "Energy Economics and Finance",
+      "body": "Economic and financial analysis of energy systems, investment feasibility, electricity pricing, and project evaluation."
+    },
+    {
+      "title": "Sustainable Finance and Green Investment",
+      "body": "Mobilization of capital through ESG principles, green bonds, blended finance, and sustainable investment strategies."
+    },
+    {
+      "title": "Electricity Market Structure and Regulation",
+      "body": "Design, restructuring, pricing mechanisms, and competition analysis for efficient and transparent power markets."
+    },
+    {
+      "title": "Risk Management and Energy Systems",
+      "body": "Risk quantification, uncertainty modeling, and resilience frameworks for energy infrastructure and projects."
+    },
+    {
+      "title": "Energy Policy and Governance",
+      "body": "Formulation, analysis, and evaluation of policies and regulations to guide energy transition and long-term planning."
+    },
+    {
+      "title": "Macroeconomics and Public Policy in Energy",
+      "body": "Study of subsidies, tariffs, and fiscal instruments shaping energy access, affordability, and welfare"
+    },
+    {
+      "title": "Renewable Energy Transition & Sustainability",
+      "body": "Integration of solar, hydro, wind, hydrogen, and other renewable sources, including techno-economic and sustainability assessments."
+    },
+    {
+      "title": "Climate Change and Energy Resilience",
+      "body": "Assessment of climate risks, adaptation strategies, and resilience planning for energy systems."
+    },
+    {
+      "title": "Carbon Pricing & Environmental Economics",
+      "body": "Application of carbon markets, carbon taxes, and renewable energy certificates to accelerate decarbonization."
+    },
+    {
+      "title": "Technology and Innovation in Energy",
+      "body": "Evaluation of disruptive technologies, digital solutions, and innovation ecosystems driving energy transition."
+    },
+    {
+      "title": "Electric Vehicles and Emerging Technologies",
+      "body": "Analysis of EV adoption, charging networks, hydrogen mobility, and innovation pathways."
+    },
+    {
+      "title": "Energy Law and Regulation",
+      "body": "Legal frameworks for energy markets, environmental compliance, and governance of energy resources."
+    },
+    {
+      "title": "Consumer Behaviour and Technology Adoption",
+      "body": "Understanding behavioral, social, and cultural factors that influence acceptance of clean energy technologies."
+    },
+    {
+      "title": "Capacity Building and Knowledge Transfer",
+      "body": "Design of training, education, and institutional strengthening programs to build expertise in energy economics and policy."
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 ---
-import { getImage } from 'astro:assets';
+import { getImage, Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import Nav from '../Nav.astro';
 import Button from '../Button.astro';
@@ -10,8 +10,26 @@ import heroArtMobile from '../../assets/art/paint_mobile.jpg';
 import duskArt from '../../assets/art/paint_dusk.jpg';
 import { t, href, getLang, DASHBOARDS } from '../../i18n/ui';
 import * as H from '../../data/home';
+import { getNews, getBriefs, getResearch, getPartners, pick, formatDate } from '../../lib/content';
+import { media } from '../../lib/media';
 
 const lang = getLang(Astro.url);
+
+// content (Supabase at build time, snapshot otherwise)
+const [news, briefs, research, partners] = await Promise.all([getNews(), getBriefs(), getResearch(), getPartners()]);
+const latest = news[0];
+const featured = briefs.find((b) => b.featured) ?? briefs[0];
+const sideBriefs = briefs.filter((b) => b !== featured).slice(0, 2);
+const latestResearch = research.slice(0, 3);
+const stats = [
+  { value: String(briefs.length + research.length), label: { en: 'Publications', id: 'Publikasi' } },
+  { value: String(DASHBOARDS.length), label: { en: 'Live dashboards', id: 'Dasbor interaktif' } },
+  { value: String(partners.length), label: { en: 'Partners', id: 'Mitra' } },
+];
+const newsHref = (slug: string) => href(lang, `/news/${slug}`);
+const briefHref = (slug: string) => href(lang, `/policy-brief#${slug}`);
+const monthYear = (iso: string | null) => iso ? new Date(iso + 'T00:00:00').toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-GB', { month: 'long', year: 'numeric' }) : '';
+const THEME = { energy: { en: 'Energy & finance', id: 'Energi & keuangan' }, social: { en: 'Social policy', id: 'Kebijakan sosial' }, economy: { en: 'Economy & growth', id: 'Ekonomi & pertumbuhan' } } as const;
 
 // Responsive WebP art generated at build time (AVIF tested larger on the grainy painted texture).
 const sizes = async (src: ImageMetadata, widths: number[], format: 'webp') =>
@@ -24,7 +42,6 @@ const frameArt = await getImage({ src: heroArt, width: 1400, format: 'webp', qua
 const dusk = await getImage({ src: duskArt, width: 2000, format: 'webp', quality: 68 });
 const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', quality: 66 });
 
-const fmtDate = (d: string) => new Date(d).toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 ---
 <Base>
   <header slot="hero" class="hero">
@@ -45,11 +62,11 @@ const fmtDate = (d: string) => new Date(d).toLocaleDateString(lang === 'id' ? 'i
     </div>
     <div class="wrap lake">
       <div class="lake-panel glass-dark">
-        <a class="latest" href={href(lang, H.news.href)}>
-          <span class="k">{lang === 'id' ? 'Terbaru' : 'Latest'} · Kompas Bisnis</span>
-          <span class="t">{H.news.summary[lang]}</span>
+        <a class="latest" href={newsHref(latest.slug)}>
+          <span class="k">{lang === 'id' ? 'Terbaru' : 'Latest'} · {formatDate(latest.date, lang)}</span>
+          <span class="t">{pick(latest, 'tagline', lang) ?? pick(latest, 'title', lang)}</span>
         </a>
-        {H.stats.map((s) => <div class="stat"><b>{s.value}</b><span>{s.label[lang]}</span></div>)}
+        {stats.map((s) => <div class="stat"><b>{s.value}</b><span>{s.label[lang]}</span></div>)}
       </div>
     </div>
   </header>
@@ -106,27 +123,31 @@ const fmtDate = (d: string) => new Date(d).toLocaleDateString(lang === 'id' ? 'i
         <Button href={href(lang, '/publication')} variant="ghost" icon="arrow">{t(lang, 'cta.viewAllPubs')}</Button>
       </div>
       <div class="pubs">
-        <a class="card lead" href={href(lang, H.featuredBrief.href)} style={`--art:url(${dusk.src})`}>
-          <span class="k">{H.pubsSection.featuredLabel[lang]}</span>
-          <h3>{H.featuredBrief.title}</h3>
-          <p>{H.featuredBrief.summary[lang]}</p>
+        <a class="card lead" href={briefHref(featured.slug)} style={`--art:url(${dusk.src})`}>
+          <span class="k">{H.pubsSection.featuredLabel[lang]}{featured.published_on && ` · ${monthYear(featured.published_on)}`}</span>
+          <h3>{featured.title}</h3>
+          {pick(featured, 'summary', lang) && <p>{pick(featured, 'summary', lang)}</p>}
           <span class="meta"><Icon name="doc" size={18} /> {t(lang, 'cta.readBrief')}</span>
         </a>
         <div class="side">
           <div class="two">
-            {H.briefs.map((b) => (
-              <a class="card card-paper brief" href={href(lang, '/policy-brief')}><span class="k">Policy brief</span><h3>{b}</h3></a>
+            {sideBriefs.map((b) => (
+              <a class="card card-paper brief" href={briefHref(b.slug)}>
+                <span class="k">{b.theme ? THEME[b.theme][lang] : 'Policy brief'}</span><h3>{b.title}</h3>
+              </a>
             ))}
           </div>
           <div class="card card-paper rlist">
             <span class="k">{H.pubsSection.researchLabel[lang]}</span>
-            <ul>{H.research.map((r) => <li><b>{r.year}</b><span>{r.title}</span></li>)}</ul>
+            <ul>{latestResearch.map((r) => (
+              <li><b>{r.year}</b>{r.journal_url ? <a href={r.journal_url} target="_blank" rel="noopener">{r.title}</a> : <span>{r.title}</span>}</li>
+            ))}</ul>
           </div>
         </div>
       </div>
-      <a class="news" href={href(lang, H.news.href)}>
-        <time datetime={H.news.date}>{fmtDate(H.news.date)}</time>
-        <span class="nt"><strong>{H.news.title[lang]}</strong><span>{H.news.summary[lang]}</span></span>
+      <a class="news" href={newsHref(latest.slug)}>
+        <time datetime={latest.date}>{formatDate(latest.date, lang)}</time>
+        <span class="nt"><strong>{pick(latest, 'title', lang)}</strong><span>{pick(latest, 'summary', lang)}</span></span>
         <span class="nb">{t(lang, 'cta.readArticle')}</span>
       </a>
     </div>
@@ -135,7 +156,18 @@ const fmtDate = (d: string) => new Date(d).toLocaleDateString(lang === 'id' ? 'i
   <section class="section partners-sec">
     <div class="wrap">
       <p class="eyebrow center">{H.partnersTitle[lang]}</p>
-      <ul class="partners">{H.partners.map((p) => <li>{p}</li>)}</ul>
+      <ul class="partners">
+        {partners.map((p) => {
+          const logo = media(p.logo);
+          return (
+            <li title={p.name}>
+              {logo && typeof logo !== 'string'
+                ? <Image src={logo} alt={p.name} width={240} quality={80} />
+                : logo ? <img src={logo} alt={p.name} loading="lazy" /> : <span>{p.name}</span>}
+            </li>
+          );
+        })}
+      </ul>
     </div>
   </section>
 
@@ -218,12 +250,18 @@ const fmtDate = (d: string) => new Date(d).toLocaleDateString(lang === 'id' ? 'i
   /* partners */
   .partners-sec { padding-top: 10px; }
   .center { text-align: center; margin-bottom: 28px; }
-  .partners { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; list-style: none; }
-  .partners li { padding: 10px 18px; border-radius: var(--r-pill); border: 1px solid rgba(19, 40, 63, .18); color: #40505e; font-size: .84rem; font-weight: 600; }
+  .partners { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; list-style: none; }
+  .partners li { display: grid; place-items: center; height: 92px; padding: 14px 18px; border-radius: var(--r-md);
+    background: #fff; border: 1px solid rgba(19, 40, 63, .08); }
+  .partners li :global(img) { max-width: 100%; max-height: 56px; width: auto; height: auto; object-fit: contain;
+    filter: grayscale(1); opacity: .78; transition: filter .2s ease, opacity .2s ease; }
+  .partners li:hover :global(img) { filter: none; opacity: 1; }
+  .rlist li a:hover { text-decoration: underline; text-underline-offset: 3px; }
   .strip { height: 200px; background-size: cover; background-position: center 92%; }
 
   @media (max-width: 1080px) {
     .services, .dash-grid { grid-template-columns: 1fr 1fr; }
+    .partners { grid-template-columns: repeat(4, 1fr); }
     .pubs { grid-template-columns: 1fr; }
   }
   @media (max-width: 640px) {
@@ -255,5 +293,8 @@ const fmtDate = (d: string) => new Date(d).toLocaleDateString(lang === 'id' ? 'i
     .news { flex-direction: column; align-items: flex-start; gap: 10px; }
     .nb { margin-left: 0; }
     .strip { height: 120px; }
+    .partners { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .partners li { height: 70px; padding: 10px; }
+    .partners li :global(img) { max-height: 40px; }
   }
 </style>

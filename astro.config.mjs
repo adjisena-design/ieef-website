@@ -11,5 +11,6 @@ export default defineConfig({
     locales: ['en', 'id'],
     routing: { prefixDefaultLocale: false },
   },
-  image: { responsiveStyles: true },
+  // console uploads live in Supabase Storage; allow Astro to optimise them at build time
+  image: { responsiveStyles: true, remotePatterns: [{ protocol: 'https', hostname: '**.supabase.co' }] },
 });
