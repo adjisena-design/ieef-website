@@ -24,7 +24,7 @@ export type News = {
   title_en: string | null; title_id: string | null; tagline_en: string | null; tagline_id: string | null;
   summary_en: string | null; summary_id: string | null; body_en: string | null; body_id: string | null;
   image: string | null; source_label: string | null; source_url: string | null; published: boolean;
-  legacy_slug?: string | null;
+  legacy_slug?: string | null; featured?: boolean;
 };
 export type Career = {
   slug: string; title_en: string | null; title_id: string | null; intro_en: string | null; intro_id: string | null;
@@ -67,6 +67,8 @@ export const getPeople = () => table<Person>('people', 'sort.asc', snapPeople);
 export const getPublications = () => table<Publication>('publications', 'sort.asc', snapPublications);
 export const getNews = async () =>
   (await table<News>('news', 'date.desc', snapNews)).slice().sort((a, b) => b.date.localeCompare(a.date));
+/** The pinned headline article, or the newest one when none is pinned. */
+export const headlineNews = (items: News[]) => items.find((n) => n.featured) ?? items[0];
 export const getCareers = () => table<Career>('careers', 'sort.asc', snapCareers);
 export const getPartners = () => table<Partner>('partners', 'sort.asc', snapPartners);
 

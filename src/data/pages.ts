@@ -9,6 +9,7 @@ export const news = {
     id: 'Siaran pers, liputan media, dan kegiatan para peneliti IEEF dan SBM ITB.',
   } as L,
   latest: { en: 'Latest', id: 'Terbaru' } as L,
+  headline: { en: 'Headline', id: 'Sorotan' } as L,
   all: { en: 'All', id: 'Semua' } as L,
   year: { en: 'Year', id: 'Tahun' } as L,
   back: { en: 'All news', id: 'Semua berita' } as L,

@@ -15,7 +15,8 @@
   "source_label": null,
   "source_url": null,
   "published": true,
-  "legacy_slug": "press-release-16"
+  "legacy_slug": "press-release-16",
+  "featured": false
  },
  {
   "slug": "economy-grows-5-29-percent-q2-2026",
@@ -33,7 +34,8 @@
   "source_label": null,
   "source_url": null,
   "published": true,
-  "legacy_slug": "press-release-15"
+  "legacy_slug": "press-release-15",
+  "featured": false
  },
  {
   "slug": "financial-market-pressure-real-sector",
@@ -51,7 +53,8 @@
   "source_label": "itb.ac.id, August 20, 2026",
   "source_url": "https://itb.ac.id/berita/ekonom-itb-soroti-ketahanan-ekonomi-indonesia-pada-kuartal-ii-2026/63725",
   "published": true,
-  "legacy_slug": "press-release-14"
+  "legacy_slug": "press-release-14",
+  "featured": false
  },
  {
   "slug": "lower-unemployment-formal-productive-jobs",
@@ -69,7 +72,8 @@
   "source_label": null,
   "source_url": null,
   "published": true,
-  "legacy_slug": "press-release-13"
+  "legacy_slug": "press-release-13",
+  "featured": false
  },
  {
   "slug": "growth-that-benefits-the-public-kompas-tv",
@@ -87,7 +91,8 @@
   "source_label": null,
   "source_url": null,
   "published": true,
-  "legacy_slug": "press-release-11"
+  "legacy_slug": "press-release-11",
+  "featured": false
  },
  {
   "slug": "growth-with-real-benefits-lemhannas-fgd",
@@ -105,7 +110,8 @@
   "source_label": null,
   "source_url": null,
   "published": true,
-  "legacy_slug": "press-release-12"
+  "legacy_slug": "press-release-12",
+  "featured": false
  },
  {
   "slug": "sbm-itb-economist-on-kompas-tv",
@@ -123,7 +129,8 @@
   "source_label": null,
   "source_url": null,
   "published": true,
-  "legacy_slug": "press-release-9"
+  "legacy_slug": "press-release-9",
+  "featured": false
  },
  {
   "slug": "reclicks-grant-asean-electricity-market",
@@ -141,7 +148,8 @@
   "source_label": null,
   "source_url": null,
   "published": true,
-  "legacy_slug": "press-release-10"
+  "legacy_slug": "press-release-10",
+  "featured": false
  },
  {
   "slug": "itb-67th-dies-natalis-research-recognition",
@@ -159,7 +167,8 @@
   "source_label": null,
   "source_url": null,
   "published": true,
-  "legacy_slug": "press-release-8"
+  "legacy_slug": "press-release-8",
+  "featured": false
  },
  {
   "slug": "komdigi-ieef-sbm-itb-green-technology-industry",
@@ -177,7 +186,8 @@
   "source_label": null,
   "source_url": null,
   "published": true,
-  "legacy_slug": "press-release-7"
+  "legacy_slug": "press-release-7",
+  "featured": false
  },
  {
   "slug": "financial-literacy-mertak-village-lombok",
@@ -195,7 +205,8 @@
   "source_label": null,
   "source_url": null,
   "published": true,
-  "legacy_slug": "press-release-3"
+  "legacy_slug": "press-release-3",
+  "featured": false
  },
  {
   "slug": "from-npv-to-enpv-energy-project-feasibility",
@@ -213,7 +224,8 @@
   "source_label": null,
   "source_url": null,
   "published": true,
-  "legacy_slug": "press-release-4"
+  "legacy_slug": "press-release-4",
+  "featured": false
  },
  {
   "slug": "csis-research-partnership-workshop",
@@ -231,7 +243,8 @@
   "source_label": null,
   "source_url": null,
   "published": true,
-  "legacy_slug": "press-release-6"
+  "legacy_slug": "press-release-6",
+  "featured": false
  },
  {
   "slug": "geo-dipa-geothermal-governance-leadership",
@@ -249,7 +262,8 @@
   "source_label": null,
   "source_url": null,
   "published": true,
-  "legacy_slug": "press-release-5"
+  "legacy_slug": "press-release-5",
+  "featured": false
  },
  {
   "slug": "asahi-glass-foundation-grant-seminar-2025",
@@ -267,7 +281,8 @@
   "source_label": null,
   "source_url": null,
   "published": true,
-  "legacy_slug": "press-release-2"
+  "legacy_slug": "press-release-2",
+  "featured": false
  },
  {
   "slug": "pyc-international-energy-conference-2025",
@@ -285,6 +300,7 @@
   "source_label": null,
   "source_url": null,
   "published": true,
-  "legacy_slug": "press-release-1"
+  "legacy_slug": "press-release-1",
+  "featured": false
  }
 ]

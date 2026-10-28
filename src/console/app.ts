@@ -333,15 +333,35 @@ async function renderEntity(main: HTMLElement, ent: Entity) {
     for (const r of items) {
       const thumbVal = r.image ?? r.photo ?? r.logo ?? r.poster ?? r.cover;
       const thumb = mediaUrl(thumbVal);
-      list.append(h('li', {}, h('button', { type: 'button', class: 'row', onClick: () => openEditor(ent, r) },
+      const isHeadline = r.featured && (ent.key === 'news' || r.kind === 'policy_brief');
+      const autoHeadline = ent.key === 'news' && !rows.some((x) => x.featured) && r === rows[0];
+      list.append(h('li', { class: 'row-wrap' }, h('button', { type: 'button', class: 'row', onClick: () => openEditor(ent, r) },
         h('span', { class: 'thumb' }, thumb ? h('img', { src: thumb, alt: '', loading: 'lazy' }) : thumbVal ? h('span', { class: 'tag' }, 'orig') : null),
         h('span', { class: 'row-text' }, h('b', {}, ent.title(r) || '(untitled)'), h('span', { class: 'muted' }, ent.subtitle(r))),
         r.published === false ? h('span', { class: 'pill off' }, 'Hidden') : h('span', { class: 'pill on' }, 'On site'),
-        r.featured ? h('span', { class: 'pill warm' }, 'Highlight') : null)));
+        isHeadline ? h('span', { class: 'pill warm' }, 'Headline') : r.featured ? h('span', { class: 'pill warm' }, 'Highlight')
+          : autoHeadline ? h('span', { class: 'pill soft', title: 'Newest article; shown as headline because none is pinned' }, 'Headline (newest)') : null),
+        headlineButton(ent, r, () => go(ent.key))));
     }
   };
   search.addEventListener('input', draw);
   draw();
+}
+
+// one-click headline / highlight controls on list rows (editors and above)
+function headlineButton(ent: Entity, r: Row, refresh: () => void) {
+  if (!can.edit() || !('featured' in r) || (ent.key !== 'news' && ent.key !== 'publications')) return null;
+  const exclusive = ent.key === 'news' || r.kind === 'policy_brief';
+  const label = r.featured ? (exclusive ? (ent.key === 'news' ? 'Unpin' : 'Remove headline') : 'Remove highlight') : (exclusive ? 'Make headline' : 'Highlight');
+  return h('button', { type: 'button', class: `btn small ${r.featured ? 'ghost' : ''} row-act`, onClick: async () => {
+    if (r.published === false && !r.featured) return toast('Turn on "Show on website" for this item first.', 'err');
+    const { error } = await sb.from(ent.key).update({ featured: !r.featured }).eq('id', r.id);
+    if (error) return toast(tableErr(error), 'err');
+    toast(r.featured
+      ? (ent.key === 'news' ? 'Unpinned. The newest article becomes the headline. Press Publish to update the website.' : 'Removed. Press Publish to update the website.')
+      : (exclusive ? 'New headline set; the previous one was unpinned. Press Publish to update the website.' : 'Highlighted. Press Publish to update the website.'));
+    refresh();
+  } }, label);
 }
 
 // ---------------------------------------------------------------- editor drawer

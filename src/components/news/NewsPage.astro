@@ -2,13 +2,14 @@
 import Base from '../../layouts/Base.astro';
 import PageHero from '../PageHero.astro';
 import NewsCard from './NewsCard.astro';
-import { getNews } from '../../lib/content';
+import { getNews, headlineNews } from '../../lib/content';
 import { getLang } from '../../i18n/ui';
 import { news as N } from '../../data/pages';
 
 const lang = getLang(Astro.url);
 const items = await getNews();
-const [first, ...rest] = items;
+const first = headlineNews(items);
+const rest = items.filter((n) => n !== first);
 const years = [...new Set(items.map((n) => n.date.slice(0, 4)))];
 ---
 <Base title={N.title[lang]} description={N.lede[lang]}>

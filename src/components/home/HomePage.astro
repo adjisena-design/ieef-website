@@ -10,14 +10,14 @@ import heroArtMobile from '../../assets/art/paint_mobile.jpg';
 import duskArt from '../../assets/art/paint_dusk.jpg';
 import { t, href, getLang, DASHBOARDS } from '../../i18n/ui';
 import * as H from '../../data/home';
-import { getNews, getBriefs, getResearch, getPartners, pick, formatDate } from '../../lib/content';
+import { getNews, getBriefs, getResearch, getPartners, pick, formatDate, headlineNews } from '../../lib/content';
 import { media } from '../../lib/media';
 
 const lang = getLang(Astro.url);
 
 // content (Supabase at build time, snapshot otherwise)
 const [news, briefs, research, partners] = await Promise.all([getNews(), getBriefs(), getResearch(), getPartners()]);
-const latest = news[0];
+const latest = headlineNews(news);
 const featured = briefs.find((b) => b.featured) ?? briefs[0];
 const sideBriefs = briefs.filter((b) => b !== featured).slice(0, 2);
 const latestResearch = research.slice(0, 3);
@@ -66,7 +66,7 @@ const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', qualit
     <div class="wrap lake">
       <div class="lake-panel glass-dark">
         <a class="latest" href={newsHref(latest.slug)}>
-          <span class="k">{lang === 'id' ? 'Terbaru' : 'Latest'} · {formatDate(latest.date, lang)}</span>
+          <span class="k">{latest.featured ? (lang === 'id' ? 'Sorotan' : 'Headline') : (lang === 'id' ? 'Terbaru' : 'Latest')} · {formatDate(latest.date, lang)}</span>
           <span class="t">{pick(latest, 'tagline', lang) ?? pick(latest, 'title', lang)}</span>
         </a>
         {stats.map((s) => <div class="stat"><b>{s.value}</b><span>{s.label[lang]}</span></div>)}

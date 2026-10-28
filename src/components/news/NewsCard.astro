@@ -19,7 +19,7 @@ const year = item.date.slice(0, 4);
     {img && typeof img !== 'string'
       ? <Image src={img} alt="" widths={featured ? [640, 960, 1280] : [420, 720]} sizes={featured ? '(max-width: 860px) 92vw, 640px' : '(max-width: 560px) 92vw, (max-width: 1000px) 46vw, 380px'} quality={72} loading={eager ? 'eager' : 'lazy'} />
       : img ? <img src={img} alt="" loading={eager ? 'eager' : 'lazy'} /> : null}
-    {featured && <span class="badge">{N.latest[lang]}</span>}
+    {featured && <span class="badge">{item.featured ? N.headline[lang] : N.latest[lang]}</span>}
   </div>
   <div class="txt">
     <p class="meta"><time datetime={item.date}>{formatDate(item.date, lang, featured ? 'long' : 'short')}</time>{item.place && <span>{item.place}</span>}</p>
