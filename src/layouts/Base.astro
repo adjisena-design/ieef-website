@@ -28,6 +28,7 @@ const org = {
   <script is:inline>
     // enable the motion layer only when JS runs and the visitor hasn't asked for reduced motion
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('motion');
+    try { if (sessionStorage.getItem('ieef-lang-switch')) { document.documentElement.classList.add('no-intro'); sessionStorage.removeItem('ieef-lang-switch'); } } catch (e) {}
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{fullTitle}</title>
@@ -66,16 +67,29 @@ const org = {
         'main .partners li', 'main .news', 'main .rlist li', 'main .mission li', 'main .vision', 'main .group h2',
         'main .dusk-title', 'main .cta-box', 'main .bar .chip', 'main .platform', 'main .leader .excerpt',
       ].join(',');
+      // skip items already on screen, nested items, and cards inside sideways scrollers (they reveal with their row)
       const els = Array.from(document.querySelectorAll<HTMLElement>(SELECTORS))
-        .filter((el) => !el.closest('[data-reveal]') && el.getBoundingClientRect().top > window.innerHeight * 0.9);
+        .filter((el) => !el.closest('[data-reveal]') && !el.closest('.dash-grid') && el.getBoundingClientRect().top > window.innerHeight * 0.85);
+      document.querySelectorAll<HTMLElement>('.dash-grid').forEach((g) => { if (g.getBoundingClientRect().top > window.innerHeight * 0.85) els.push(g); });
       const io = new IntersectionObserver((entries) => {
         entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+      }, { rootMargin: '0px 0px -4% 0px', threshold: 0.01 });
       els.forEach((el) => {
         const sibs = el.parentElement ? Array.from(el.parentElement.children).filter((c) => els.includes(c as HTMLElement)) : [];
-        el.style.setProperty('--i', String(Math.min(sibs.indexOf(el), 6)));
+        el.style.setProperty('--i', String(Math.min(sibs.indexOf(el) % 4, 3)));
         el.setAttribute('data-reveal', '');
         io.observe(el);
+      });
+    }
+
+    // lazy images fade in on arrival
+    if (root.classList.contains('motion')) {
+      document.querySelectorAll<HTMLImageElement>('main img[loading="lazy"]').forEach((img) => {
+        if (img.complete && img.naturalWidth) return;
+        img.classList.add('lz');
+        const done = () => img.classList.add('lz-in');
+        img.addEventListener('load', done, { once: true });
+        img.addEventListener('error', done, { once: true });
       });
     }
   </script>

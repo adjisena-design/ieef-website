@@ -16,9 +16,12 @@ const year = item.date.slice(0, 4);
 ---
 <a class:list={['ncard', { featured }]} href={href(lang, `/news/${item.slug}`)} data-year={year}>
   <div class="ph">
-    {img && typeof img !== 'string'
-      ? <Image src={img} alt="" widths={featured ? [640, 960, 1280] : [420, 720]} sizes={featured ? '(max-width: 860px) 92vw, 640px' : '(max-width: 560px) 92vw, (max-width: 1000px) 46vw, 380px'} quality={72} loading={eager ? 'eager' : 'lazy'} />
-      : img ? <img src={img} alt="" loading={eager ? 'eager' : 'lazy'} /> : null}
+    {img && typeof img !== 'string' ? (
+      <>
+        <Image class="bg" src={img} alt="" widths={featured ? [640, 960, 1280] : [420, 720]} sizes={featured ? '(max-width: 860px) 92vw, 640px' : '(max-width: 560px) 92vw, (max-width: 1000px) 46vw, 380px'} quality={72} loading={eager ? 'eager' : 'lazy'} />
+        <Image class="fg" src={img} alt="" widths={featured ? [640, 960, 1280] : [420, 720]} sizes={featured ? '(max-width: 860px) 92vw, 640px' : '(max-width: 560px) 92vw, (max-width: 1000px) 46vw, 380px'} quality={72} loading={eager ? 'eager' : 'lazy'} />
+      </>
+    ) : img ? (<><img class="bg" src={img} alt="" loading={eager ? 'eager' : 'lazy'} /><img class="fg" src={img} alt="" loading={eager ? 'eager' : 'lazy'} /></>) : null}
     {featured && <span class="badge">{item.featured ? N.headline[lang] : N.latest[lang]}</span>}
   </div>
   <div class="txt">
@@ -33,8 +36,11 @@ const year = item.date.slice(0, 4);
   .ncard { display: flex; flex-direction: column; border-radius: var(--r-lg); overflow: hidden; background: var(--paper-card);
     border: 1px solid rgba(19, 40, 63, .08); height: 100%; }
   .ph { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: #dfe6e3; }
-  .ph :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease-out, ease); }
-  .ncard:hover .ph :global(img) { transform: scale(1.04); }
+  /* whole image always visible (many are press screenshots with text); a blurred copy fills the spare space */
+  .ph :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .ph :global(.bg) { object-fit: cover; filter: blur(16px) saturate(1.15); transform: scale(1.18); opacity: .6; }
+  .ph :global(.fg) { object-fit: contain; transition: transform .8s var(--ease-out, ease); }
+  .ncard:hover .ph :global(.fg) { transform: scale(1.03); }
   .badge { position: absolute; top: 14px; left: 14px; padding: 6px 12px; border-radius: var(--r-pill); background: var(--warm); color: var(--navy-deep);
     font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
   .txt { display: flex; flex-direction: column; gap: 10px; padding: 22px 24px 24px; flex: 1; }

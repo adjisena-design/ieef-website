@@ -6,6 +6,7 @@ import Button from '../Button.astro';
 import Icon from '../Icon.astro';
 import Sparkline from '../Sparkline.astro';
 import heroArt from '../../assets/art/paint_hero.jpg';
+import workArt from '../../assets/art/ieef-at-work.jpg';
 import heroArtMobile from '../../assets/art/paint_mobile.jpg';
 import duskArt from '../../assets/art/paint_dusk.jpg';
 import { t, href, getLang, DASHBOARDS } from '../../i18n/ui';
@@ -38,7 +39,7 @@ const sizes = async (src: ImageMetadata, widths: number[], format: 'webp') =>
 const heroWebp = await sizes(heroArt, [960, 1600, 2400], 'webp');
 const mobWebp = await sizes(heroArtMobile, [450, 900], 'webp');
 const heroFallback = await getImage({ src: heroArt, width: 1600, format: 'jpg', quality: 72 });
-const frameArt = await getImage({ src: heroArt, width: 1400, format: 'webp', quality: 70 });
+const frameArt = await getImage({ src: workArt, width: 1200, format: 'webp', quality: 72 });
 const dusk = await getImage({ src: duskArt, width: 2000, format: 'webp', quality: 68 });
 const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', quality: 66 });
 
@@ -116,6 +117,7 @@ const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', qualit
           </a>
         ))}
       </div>
+      <div class="dash-dots" aria-hidden="true">{DASHBOARDS.map((_, i) => <button type="button" tabindex="-1" aria-current={String(i === 0)}></button>)}</div>
     </div>
   </section>
 
@@ -178,20 +180,51 @@ const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', qualit
 </Base>
 
 <script>
+  // Painted hero animation. The still painting underneath is always visible; the video only fades in once it is
+  // actually playing, and fades out again if the browser pauses it (rotation, low-power mode, tab switch).
   const v = document.querySelector<HTMLVideoElement>('.hero-video');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const saveData = (navigator as any).connection?.saveData;
   if (v && !reduce && !saveData) {
-    const mobile = window.matchMedia('(max-width: 640px)').matches;
-    v.src = mobile ? v.dataset.mobile! : v.dataset.desktop!;
-    v.addEventListener('playing', () => v.classList.add('on'), { once: true });
-    v.play().catch(() => {});
+    const mq = window.matchMedia('(max-width: 640px)');
+    const resume = () => { v.play().catch(() => v.classList.remove('on')); };
+    const load = () => {
+      const want = mq.matches ? v.dataset.mobile! : v.dataset.desktop!;
+      if (v.dataset.cur === want) return resume();
+      v.classList.remove('on');
+      v.dataset.cur = want;
+      v.src = want;
+      v.load();
+      resume();
+    };
+    v.addEventListener('playing', () => v.classList.add('on'));
+    ['pause', 'waiting', 'stalled', 'emptied', 'error'].forEach((e) => v.addEventListener(e, () => v.classList.remove('on')));
+    mq.addEventListener('change', load);
+    window.addEventListener('orientationchange', () => setTimeout(load, 350));
+    window.addEventListener('pageshow', resume);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) resume(); });
+    load();
+  }
+
+  // Dashboards: swipeable cards on phones, with dots that follow the swipe
+  const track = document.querySelector<HTMLElement>('.dash-grid');
+  const dots = document.querySelectorAll<HTMLButtonElement>('.dash-dots button');
+  if (track && dots.length) {
+    const cards = Array.from(track.children) as HTMLElement[];
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting && e.intersectionRatio > .6) {
+        const i = cards.indexOf(e.target as HTMLElement);
+        dots.forEach((d, k) => d.setAttribute('aria-current', String(k === i)));
+      } });
+    }, { root: track, threshold: [.6] });
+    cards.forEach((c) => io.observe(c));
+    dots.forEach((d, i) => d.addEventListener('click', () => track.scrollTo({ left: cards[i].offsetLeft - track.offsetLeft - parseFloat(getComputedStyle(track).paddingLeft), behavior: 'smooth' })));
   }
 </script>
 
 <style>
   /* hero */
-  .hero { position: relative; min-height: 940px; padding-bottom: 200px; color: var(--navy); isolation: isolate; }
+  .hero { position: relative; z-index: 5; min-height: 940px; padding-bottom: 200px; color: var(--navy); isolation: isolate; }
   .hero-art { position: absolute; inset: 0; z-index: -2; }
   .hero-art img { width: 100%; height: 100%; object-fit: cover; object-position: center bottom; }
   .hero-video { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: center bottom;
@@ -221,7 +254,7 @@ const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', qualit
   /* about */
   .about { display: grid; grid-template-columns: .9fr 1.1fr; gap: 60px; align-items: center; margin-bottom: 56px; }
   .about h2 { margin: 12px 0 20px; }
-  .frame { position: relative; height: 440px; border-radius: 200px 200px 28px 28px; background-size: 240% auto; background-position: 78% 55%; box-shadow: 0 30px 60px -30px rgba(10, 40, 40, .5); }
+  .frame { position: relative; height: 440px; border-radius: 200px 200px 28px 28px; background-size: cover; background-position: center 62%; box-shadow: 0 30px 60px -30px rgba(10, 40, 40, .5); }
   .chip { position: absolute; left: 24px; bottom: 24px; border-radius: 18px; padding: 12px 16px; font-size: .8rem; font-weight: 650; color: var(--navy); }
   .services { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
   .svc .ico { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: #e3efe6; color: var(--teal-ink); margin-bottom: 22px; }
@@ -239,6 +272,20 @@ const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', qualit
   .dash .tag { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--warm-soft); }
   .dash h3 { color: #fff; margin: 8px 0 18px; min-height: 48px; }
   .dash .go { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, .18); font-size: .85rem; font-weight: 650; }
+
+  .dash-dots { display: none; }
+  @media (max-width: 760px) {
+    /* one row of cards that swipes sideways; snapping keeps a whole card in view */
+    .dash-grid { display: flex; gap: 14px; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+      margin: 0 calc(-1 * var(--gutter)); padding: 4px var(--gutter) 6px; scroll-padding-inline: var(--gutter); scrollbar-width: none;
+      -webkit-overflow-scrolling: touch; }
+    .dash-grid::-webkit-scrollbar { display: none; }
+    .dash { flex: 0 0 82%; scroll-snap-align: start; scroll-snap-stop: always; }
+    .dash:hover { transform: none; }
+    .dash-dots { display: flex; justify-content: center; gap: 8px; margin-top: 16px; }
+    .dash-dots button { width: 8px; height: 8px; padding: 0; border-radius: 4px; background: rgba(255, 255, 255, .4); transition: width .3s var(--ease-out), background-color .3s; }
+    .dash-dots button[aria-current='true'] { width: 24px; background: var(--warm-soft); }
+  }
 
   /* publications */
   .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 40px; flex-wrap: wrap; }
@@ -303,7 +350,7 @@ const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', qualit
     .svc p { display: none; }
     .svc h3 { font-size: .95rem; }
     .svc .ico { width: 40px; height: 40px; margin-bottom: 14px; }
-    .dash-grid, .two { grid-template-columns: 1fr; }
+    .two { grid-template-columns: 1fr; }
     .dash h3 { min-height: 0; }
     .dusk-title { padding: 20px; }
     .lead { min-height: 440px; padding: 24px; }

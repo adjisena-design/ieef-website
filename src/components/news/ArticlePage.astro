@@ -56,8 +56,8 @@ const jsonLd = {
     {img && (
       <figure class="hero-img">
         {typeof img !== 'string'
-          ? <Image src={img} alt={title} widths={[720, 1100, 1500]} sizes="(max-width: 1100px) 92vw, 1040px" quality={78} loading="eager" />
-          : <img src={img} alt={title} />}
+          ? <><Image class="bg" src={img} alt="" widths={[720, 1100, 1500]} sizes="(max-width: 1100px) 92vw, 1040px" quality={78} loading="eager" /><Image class="fg" src={img} alt={title} widths={[720, 1100, 1500]} sizes="(max-width: 1100px) 92vw, 1040px" quality={78} loading="eager" /></>
+          : <><img class="bg" src={img} alt="" /><img class="fg" src={img} alt={title} /></>}
       </figure>
     )}
     <div class="body">
@@ -102,7 +102,9 @@ const jsonLd = {
   .tagline { margin-top: 14px; font-size: 1.1rem; color: #36506a; font-style: italic; }
   .note { margin-top: 16px; display: inline-block; padding: 8px 14px; border-radius: 10px; background: var(--sage); font-size: .86rem; color: #2a4a43; }
   .hero-img { border-radius: var(--r-lg); overflow: hidden; background: #dfe6e3; box-shadow: var(--shadow-soft); }
-  .hero-img :global(img) { width: 100%; max-height: 640px; object-fit: cover; }
+  .hero-img { position: relative; display: grid; place-items: center; max-height: 640px; }
+  .hero-img :global(.bg) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(20px) saturate(1.15); transform: scale(1.15); opacity: .55; }
+  .hero-img :global(.fg) { position: relative; width: 100%; height: auto; max-height: 640px; object-fit: contain; }
   .body { max-width: 720px; margin: 44px auto 0; }
   .body p { font-size: 1.06rem; line-height: 1.8; color: #22344a; margin-bottom: 1.3em; }
   .body p :global(a), .source a { color: var(--teal-ink); text-decoration: underline; text-underline-offset: 3px; word-break: break-word; }

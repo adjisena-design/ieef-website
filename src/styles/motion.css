@@ -2,13 +2,29 @@
    Everything is skipped for prefers-reduced-motion, and content stays visible if scripts don't run
    (reveal styles only apply once <html> has the .motion class set by the script). */
 
-:root { --ease-out: cubic-bezier(.2, .7, .2, 1); }
+:root { --ease-out: cubic-bezier(.2, .7, .2, 1); --ease-soft: cubic-bezier(.16, 1, .3, 1); }
+
+/* page-to-page and language switches cross-fade instead of flashing (supporting browsers; others navigate normally) */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: .28s ease both vt-out; }
+::view-transition-new(root) { animation: .38s ease both vt-in; }
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; } }
 
 @media (prefers-reduced-motion: no-preference) {
   /* ---------- scroll reveal ---------- */
-  .motion [data-reveal] { opacity: 0; translate: 0 22px; transition: opacity .7s var(--ease-out), translate .7s var(--ease-out), transform .3s var(--ease-out), box-shadow .3s var(--ease-out);
-    transition-delay: calc(var(--i, 0) * 70ms); }
-  .motion [data-reveal].in { opacity: 1; translate: none; }
+  .motion [data-reveal] { opacity: 0; translate: 0 14px; will-change: opacity, translate;
+    transition: opacity 1s var(--ease-soft), translate 1.1s var(--ease-soft), transform .3s var(--ease-out), box-shadow .3s var(--ease-out);
+    transition-delay: calc(var(--i, 0) * 55ms), calc(var(--i, 0) * 55ms), 0s, 0s; }
+  .motion [data-reveal].in { opacity: 1; translate: none; will-change: auto; }
+
+  /* lazy images fade in when they arrive instead of popping */
+  .motion img.lz { opacity: 0; transition: opacity .6s ease; }
+  .motion img.lz.lz-in { opacity: 1; }
+
+  /* after a language switch the page is already familiar: no intro replay */
+  .motion.no-intro .hero-text > *, .motion.no-intro .page-hero .box > *, .motion.no-intro .lake-panel, .motion.no-intro .navbar .bar { animation: none; }
 
   /* ---------- hero entrance ---------- */
   .motion .hero-text > *, .motion .page-hero .box > * { animation: rise .9s var(--ease-out) both; }

@@ -30,13 +30,14 @@ const isActive = (p: string) => (p === '/' ? here === '/' : here.startsWith(p) |
       ))}
     </ul>
 
-    <a class="lang" href={alt.path} hreflang={alt.lang} title={t(lang, 'lang.switch')} aria-label={t(lang, 'lang.switch')}>
+    <a class:list={['lang', `is-${lang}`]} href={alt.path} hreflang={alt.lang} title={t(lang, 'lang.switch')} aria-label={t(lang, 'lang.switch')}>
+      <i class="knob" aria-hidden="true"></i>
       {Object.entries(languages).map(([code, label]) => <span class:list={{ on: code === lang }}>{label === 'EN' ? 'EN' : 'ID'}</span>)}
     </a>
     <a class="cta" href={href(lang, '/contact-us')}>{t(lang, 'nav.contact')}</a>
 
     <button class="burger" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label={t(lang, 'nav.menu')}>
-      <Icon name="menu" size={22} />
+      <span class="lines" aria-hidden="true"><i></i><i></i><i></i></span>
     </button>
   </nav>
 
@@ -53,19 +54,43 @@ const isActive = (p: string) => (p === '/' ? here === '/' : here.startsWith(p) |
 </header>
 
 <script>
+  // Mobile menu: animated open/close, closes on outside tap, Escape or choosing a link.
   const btn = document.querySelector<HTMLButtonElement>('.burger');
   const menu = document.getElementById('mobile-menu');
-  btn?.addEventListener('click', () => {
-    const open = btn.getAttribute('aria-expanded') === 'true';
-    btn.setAttribute('aria-expanded', String(!open));
-    if (menu) menu.hidden = open;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let closeTimer: number | undefined;
+  const setOpen = (open: boolean) => {
+    if (!btn || !menu) return;
+    btn.setAttribute('aria-expanded', String(open));
+    window.clearTimeout(closeTimer);
+    if (open) {
+      menu.hidden = false;
+      requestAnimationFrame(() => requestAnimationFrame(() => menu.classList.add('open')));
+    } else {
+      menu.classList.remove('open');
+      closeTimer = window.setTimeout(() => { menu.hidden = true; }, reduce ? 0 : 320);
+    }
+  };
+  btn?.addEventListener('click', (e) => { e.stopPropagation(); setOpen(btn.getAttribute('aria-expanded') !== 'true'); });
+  document.addEventListener('click', (e) => { if (menu && !menu.hidden && !menu.contains(e.target as Node)) setOpen(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+  menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+
+  // Language switch: slide the pill first, then load the other language without replaying the page intro.
+  const langLink = document.querySelector<HTMLAnchorElement>('.lang');
+  langLink?.addEventListener('click', (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || reduce) return;
+    e.preventDefault();
+    langLink.classList.add('flip');
+    try { sessionStorage.setItem('ieef-lang-switch', '1'); } catch { /* storage unavailable */ }
+    window.setTimeout(() => { window.location.href = langLink.href; }, 230);
   });
 </script>
 
 <style>
   .skip { position: absolute; left: -999px; top: 8px; z-index: 100; background: var(--navy); color: #fff; padding: 10px 16px; border-radius: 10px; }
   .skip:focus { left: 16px; }
-  .navbar { position: relative; z-index: 20; padding-top: 18px; }
+  .navbar { position: relative; z-index: 50; padding-top: 18px; view-transition-name: navbar; }
   .bar { display: flex; align-items: center; gap: 26px; height: 68px; padding: 0 14px 0 22px; border-radius: var(--r-md); }
   .logo :global(img) { height: 40px; width: auto; }
   .links { display: flex; gap: 24px; list-style: none; margin-left: auto; font-size: .9rem; font-weight: 550; color: #1d3550; }
@@ -77,12 +102,35 @@ const isActive = (p: string) => (p === '/' ? here === '/' : here.startsWith(p) |
   .sub a { display: block; padding: 10px 12px; border-radius: 10px; }
   .sub a:hover { background: rgba(8, 56, 104, .06); }
   .has:hover .sub, .has:focus-within .sub { opacity: 1; visibility: visible; transform: none; }
-  .lang { display: flex; padding: 3px; border-radius: var(--r-pill); background: rgba(8, 56, 104, .08); font-size: .75rem; font-weight: 700; }
-  .lang span { padding: 6px 11px; border-radius: var(--r-pill); color: var(--navy); }
-  .lang span.on { background: var(--navy); color: #fff; }
+  .lang { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding: 3px; border-radius: var(--r-pill); background: rgba(8, 56, 104, .08); font-size: .75rem; font-weight: 700; }
+  .lang span { position: relative; z-index: 1; padding: 6px 11px; text-align: center; border-radius: var(--r-pill); color: var(--navy); transition: color .25s ease; }
+  .lang span.on { color: #fff; }
+  .knob { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px); border-radius: var(--r-pill); background: var(--navy);
+    transition: transform .28s cubic-bezier(.3, .8, .3, 1); }
+  .lang.is-id .knob { transform: translateX(100%); }
+  .lang.flip.is-en .knob { transform: translateX(100%); }
+  .lang.flip.is-id .knob { transform: none; }
+  .lang.flip span.on { color: var(--navy); }
+  .lang.flip span:not(.on) { color: #fff; }
   .cta { display: inline-flex; align-items: center; height: 44px; padding: 0 22px; border-radius: var(--r-pill); background: var(--warm); color: var(--navy-deep); font-weight: 700; font-size: .94rem; }
   .burger { display: none; width: 42px; height: 42px; border-radius: 12px; place-items: center; background: rgba(251, 248, 240, .7); color: var(--navy); }
-  .drawer { position: absolute; left: var(--gutter); right: var(--gutter); top: calc(100% + 10px); border-radius: var(--r-md); padding: 10px; background: rgba(251, 248, 240, .92); }
+  .lines { position: relative; width: 20px; height: 14px; }
+  .lines i { position: absolute; left: 0; width: 100%; height: 2px; border-radius: 2px; background: currentColor; transition: transform .3s cubic-bezier(.3, .8, .3, 1), opacity .2s ease; }
+  .lines i:nth-child(1) { top: 0; } .lines i:nth-child(2) { top: 6px; } .lines i:nth-child(3) { top: 12px; }
+  .burger[aria-expanded='true'] .lines i:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+  .burger[aria-expanded='true'] .lines i:nth-child(2) { opacity: 0; transform: scaleX(.3); }
+  .burger[aria-expanded='true'] .lines i:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+  .drawer { position: absolute; z-index: 60; left: var(--gutter); right: var(--gutter); top: calc(100% + 10px); border-radius: var(--r-md); padding: 10px;
+    background: rgba(251, 248, 240, .96); box-shadow: 0 30px 60px -24px rgba(8, 30, 50, .45);
+    opacity: 0; transform: translateY(-10px) scale(.98); transform-origin: top right; transition: opacity .25s ease, transform .32s cubic-bezier(.3, .8, .3, 1); }
+  .drawer.open { opacity: 1; transform: none; }
+  .drawer li { opacity: 0; transform: translateY(-4px); transition: opacity .25s ease, transform .3s ease; }
+  .drawer.open li { opacity: 1; transform: none; }
+  .drawer.open li:nth-child(2) { transition-delay: .03s; } .drawer.open li:nth-child(3) { transition-delay: .06s; }
+  .drawer.open li:nth-child(4) { transition-delay: .09s; } .drawer.open li:nth-child(5) { transition-delay: .12s; }
+  .drawer.open li:nth-child(6) { transition-delay: .15s; } .drawer.open li:nth-child(7) { transition-delay: .18s; }
+  .drawer.open li:nth-child(n+8) { transition-delay: .21s; }
+  @media (prefers-reduced-motion: reduce) { .drawer, .drawer li, .knob, .lines i { transition: none; } }
   .drawer ul { list-style: none; }
   .drawer a { display: block; padding: 12px 14px; border-radius: 12px; font-weight: 600; color: var(--navy); }
   .drawer .on a { background: rgba(8, 56, 104, .07); }
