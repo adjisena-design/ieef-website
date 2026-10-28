@@ -24,6 +24,7 @@ export type News = {
   title_en: string | null; title_id: string | null; tagline_en: string | null; tagline_id: string | null;
   summary_en: string | null; summary_id: string | null; body_en: string | null; body_id: string | null;
   image: string | null; source_label: string | null; source_url: string | null; published: boolean;
+  legacy_slug?: string | null;
 };
 export type Career = {
   slug: string; title_en: string | null; title_id: string | null; intro_en: string | null; intro_id: string | null;

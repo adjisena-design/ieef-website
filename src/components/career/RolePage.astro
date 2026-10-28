@@ -1,0 +1,84 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Nav from '../Nav.astro';
+import Icon from '../Icon.astro';
+import Button from '../Button.astro';
+import type { Career } from '../../lib/content';
+import { pick, paragraphs } from '../../lib/content';
+import { media } from '../../lib/media';
+import { getLang, href } from '../../i18n/ui';
+import { career as C } from '../../data/pages';
+
+interface Props { role: Career }
+const { role } = Astro.props;
+const lang = getLang(Astro.url);
+const title = pick(role, 'title', lang);
+const intro = paragraphs(pick(role, 'intro', lang));
+const sections = [
+  { h: C.responsibilities[lang], items: pick(role, 'responsibilities', lang) as string[] },
+  { h: C.qualifications[lang], items: pick(role, 'qualifications', lang) as string[] },
+  { h: C.notes[lang], items: pick(role, 'notes', lang) as string[] },
+].filter((s) => s.items?.length);
+const poster = media(role.poster);
+---
+<Base title={`${title} | ${C.title[lang]}`} description={(intro[0] ?? '').slice(0, 155)}>
+  <div slot="hero" class="top"><Nav /></div>
+  <article class="wrap role">
+    <a class="back" href={href(lang, '/career')}><Icon name="arrow" size={16} class="flip" /> {C.back[lang]}</a>
+    <div class="layout">
+      <div class="main">
+        <span class:list={['status', { closed: !role.is_open }]}>{role.is_open ? C.open[lang] : C.closed[lang]}</span>
+        <h1>{title}</h1>
+        {intro.map((p) => <p class="intro">{p}</p>)}
+        {role.is_open && role.apply_url && <div class="cta"><Button href={role.apply_url} external icon="arrow">{C.apply[lang]}</Button></div>}
+        {sections.map((s) => (
+          <section>
+            <h2>{s.h}</h2>
+            <ul>{s.items.map((it) => <li>{it}</li>)}</ul>
+          </section>
+        ))}
+        {role.is_open && role.apply_url && (
+          <div class="cta end">
+            <Button href={role.apply_url} external icon="arrow">{C.apply[lang]}</Button>
+            <span>{C.questions[lang]} <a href={href(lang, '/contact-us')}>{C.contact[lang]}</a></span>
+          </div>
+        )}
+      </div>
+      {poster && (
+        <aside class="poster">
+          <p class="eyebrow">{C.poster[lang]}</p>
+          {typeof poster !== 'string'
+            ? <Image src={poster} alt={`${C.poster[lang]}: ${title}`} widths={[360, 720]} sizes="(max-width: 900px) 80vw, 340px" quality={78} />
+            : <img src={poster} alt={`${C.poster[lang]}: ${title}`} />}
+        </aside>
+      )}
+    </div>
+  </article>
+</Base>
+
+<style>
+  .top { background: linear-gradient(180deg, #dfe8ea, var(--paper)); }
+  .role { padding-top: 28px; padding-bottom: 96px; }
+  .back { display: inline-flex; align-items: center; gap: 8px; font-weight: 650; font-size: .9rem; color: var(--teal); }
+  .back :global(.flip) { transform: rotate(180deg); }
+  .layout { display: grid; grid-template-columns: 1fr 340px; gap: 64px; margin-top: 28px; align-items: start; }
+  .status { display: inline-block; padding: 4px 10px; border-radius: var(--r-pill); background: #d6eadf; color: #1d6b4f; font-size: .72rem; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase; }
+  .status.closed { background: #ece6db; color: var(--muted); }
+  h1 { margin: 14px 0 20px; font-size: clamp(2rem, 1.4rem + 1.8vw, 2.8rem); }
+  .intro { font-size: 1.04rem; line-height: 1.75; color: #22344a; margin-bottom: 1em; max-width: 700px; }
+  .cta { margin: 24px 0 8px; }
+  .cta.end { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; margin-top: 40px; padding-top: 28px; border-top: 1px solid rgba(19, 40, 63, .12); }
+  .cta.end span { color: var(--muted); font-size: .92rem; }
+  .cta.end a { color: var(--teal); font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
+  section { margin-top: 40px; }
+  h2 { font-size: 1.3rem; margin-bottom: 16px; }
+  ul { padding-left: 0; list-style: none; display: grid; gap: 12px; max-width: 720px; }
+  li { position: relative; padding-left: 28px; line-height: 1.65; color: #2a3f55; }
+  li::before { content: ''; position: absolute; left: 4px; top: .62em; width: 10px; height: 10px; border-radius: 3px; background: var(--mint); transform: rotate(45deg); }
+  .poster { position: sticky; top: 24px; }
+  .poster .eyebrow { margin-bottom: 12px; }
+  .poster :global(img) { width: 100%; height: auto; border-radius: var(--r-md); box-shadow: 0 24px 44px -26px rgba(10, 30, 50, .5); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; gap: 40px; } .poster { position: static; max-width: 360px; } }
+</style>

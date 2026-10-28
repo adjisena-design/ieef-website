@@ -1,11 +1,19 @@
 [
  {
   "slug": "post-doctoral",
-  "title_en": null,
+  "title_en": "Postdoctoral Researcher",
   "title_id": "Post Doctoral",
-  "intro_en": null,
+  "intro_en": "The Postdoctoral Researcher is an advanced research position that leads, develops and strengthens IEEF's research agenda in energy economics, finance and public policy.",
   "intro_id": "Post Doctoral merupakan posisi peneliti tingkat lanjut yang berperan dalam memimpin, mengembangkan, dan memperkuat agenda riset IEEF di bidang ekonomi energi, keuangan, dan kebijakan publik.",
-  "qualifications_en": [],
+  "qualifications_en": [
+   "Based in Bandung.",
+   "PhD in Economics, Finance, Management, Energy, Public Policy or a related field.",
+   "Previous project and research experience is an advantage.",
+   "Able to carry out economic and financial analysis of energy projects using at least one of: Input-Output Analysis, Real Option Valuation, Project Valuation, Techno-Economic Modelling, Monte Carlo Simulation, LCOE Analysis, Optimization Modelling or Data Analytics.",
+   "Familiar with Canva, Microsoft Office, social media and analytical tools for economics, energy and finance such as Excel, Stata, SPSS, EViews, R, Python, Power BI, Tableau, Bloomberg, Trading Economics, World Bank Data, IEA Statistics or other data platforms.",
+   "Good written and verbal communication in Bahasa Indonesia and English.",
+   "Thorough, proactive, with strong academic leadership and the ability to work in a multidisciplinary research team."
+  ],
   "qualifications_id": [
    "Domisili Bandung.",
    "Lulusan S3 dari bidang Ekonomi, Keuangan, Manajemen, Energi, Kebijakan Publik, atau bidang terkait.",
@@ -15,7 +23,14 @@
    "Memiliki kemampuan komunikasi tertulis dan verbal yang baik dalam Bahasa Indonesia dan Bahasa Inggris.",
    "Teliti, proaktif, memiliki kepemimpinan akademik yang baik, dan mampu bekerja dalam tim riset multidisiplin."
   ],
-  "responsibilities_en": [],
+  "responsibilities_en": [
+   "Lead and carry out research and projects in energy economics, finance and public policy, from concept to reporting.",
+   "Develop economic and energy policy models that support IEEF's strategic recommendations to national and international partners.",
+   "Contribute to policy briefs, research reports, working papers and scientific publications such as journal articles and conference papers.",
+   "Supervise or mentor research assistants, interns and junior researchers.",
+   "Represent IEEF in academic and energy policy forums, including discussions, seminars, FGDs, workshops, conferences and external collaborations.",
+   "Support the development of research proposals, concept notes, methodological frameworks and collaboration with strategic partners."
+  ],
   "responsibilities_id": [
    "Memimpin dan melaksanakan penelitian serta proyek di bidang ekonomi energi, keuangan, dan kebijakan publik, mulai dari tahap konsepsi hingga pelaporan hasil.",
    "Mengembangkan model analisis ekonomi dan kebijakan energi yang mendukung rekomendasi strategis IEEF kepada mitra nasional dan internasional.",
@@ -34,25 +49,39 @@
  },
  {
   "slug": "research-associate",
-  "title_en": null,
+  "title_en": "Research Associate",
   "title_id": "Research Associate",
-  "intro_en": null,
+  "intro_en": "SBM ITB and the Institute for Energy, Economics & Finance (IEEF) invite academics and researchers to contribute to strategic research in Energy Economics and Finance.\n\nThis position reports directly to Ir. Dzikri Firmansyah Hakam, S.T., Pg.Dip., M.Sc., Ph.D., CFP®, and is intended for candidates with a strong academic background and a record of internationally reputable publications.",
   "intro_id": "SBM ITB bersama Institute for Energy, Economics & Finance (IEEF) membuka kesempatan bagi akademisi dan peneliti untuk berkontribusi dalam pengembangan riset strategis di bidang Energy Economics and Finance.\n\nPosisi ini berada di bawah supervisi langsung Ir. Dzikri Firmansyah Hakam, S.T., Pg.Dip., M.Sc., Ph.D., CFP®️, dan ditujukan bagi kandidat dengan latar belakang akademik kuat serta rekam jejak publikasi bereputasi internasional.",
-  "qualifications_en": [],
+  "qualifications_en": [
+   "PhD in a relevant field.",
+   "At least one Q1 publication as first author in the last five years.",
+   "Expertise in Energy Economics and Finance.",
+   "Able to work independently and to targets."
+  ],
   "qualifications_id": [
    "Lulusan S3 di bidang relevan.",
    "Memiliki minimal 1 publikasi Q1 sebagai penulis pertama (5 tahun terakhir).",
    "Memiliki keahlian di Energy Economics and Finance.",
    "Mampu bekerja mandiri dan berbasis target."
   ],
-  "responsibilities_en": [],
+  "responsibilities_en": [
+   "Conduct research in energy economics and finance.",
+   "Contribute to scientific publications and policy briefs.",
+   "Take part in research discussions and strategic collaborations.",
+   "Deliver measurable research output targets."
+  ],
   "responsibilities_id": [
    "Melaksanakan riset di bidang ekonomi energi dan keuangan.",
    "Berkontribusi dalam publikasi ilmiah dan policy brief.",
    "Terlibat dalam diskusi riset dan kolaborasi strategis.",
    "Mencapai target output riset yang terukur."
   ],
-  "notes_en": [],
+  "notes_en": [
+   "Period: April to November 2026.",
+   "Open until the position is filled.",
+   "Join us and help drive research that matters for Indonesia's energy transition."
+  ],
   "notes_id": [
    "Periode: April – November 2026",
    "Lowongan dibuka hingga posisi terpenuhi.",
@@ -66,11 +95,19 @@
  },
  {
   "slug": "research-assistant",
-  "title_en": null,
+  "title_en": "Research Assistant",
   "title_id": "Research Assistant",
-  "intro_en": null,
+  "intro_en": "The Research Assistant supports research, analysis and study preparation in economics, energy, finance and public policy. The role suits candidates who want to learn more about strategic issues such as the energy transition, sustainable finance, energy sector investment, policy analysis and data-driven research. Research Assistants work with senior researchers and a multidisciplinary team on data collection, analysis, report writing and research and institutional communication materials.",
   "intro_id": "Research Assistant merupakan posisi yang berperan dalam mendukung kegiatan riset, analisis, dan penyusunan kajian di bidang ekonomi, energi, keuangan, dan kebijakan publik. Posisi ini cocok bagi kandidat yang memiliki minat kuat untuk belajar lebih dalam mengenai isu-isu strategis seperti transisi energi, pembiayaan berkelanjutan, investasi sektor energi, analisis kebijakan, serta pengembangan riset berbasis data. Dalam pelaksanaannya, Research Assistant akan bekerja bersama peneliti senior dan tim multidisiplin untuk membantu proses pengumpulan data, analisis, penulisan laporan, serta penyusunan materi riset dan komunikasi institusi.",
-  "qualifications_en": [],
+  "qualifications_en": [
+   "Based in Bandung.",
+   "Bachelor's or master's graduate, or final-year student, in Economics, Finance, Management, Energy, Public Policy, Industrial Engineering, Statistics or a related field.",
+   "Previous project and research experience is an advantage.",
+   "Able to carry out analysis under senior supervision using one of: Input-Output Analysis, Real Option Valuation, Project Valuation, Techno-Economic Modelling, Monte Carlo Simulation, LCOE Analysis, Optimization Modelling or Data Analytics.",
+   "Familiar with Canva, Microsoft Office, social media and analytical tools for economics, energy and finance such as Excel, Stata, SPSS, EViews, R, Python, Power BI, Tableau, Bloomberg, Trading Economics, World Bank Data, IEA Statistics or other data platforms.",
+   "Good written and verbal communication in Bahasa Indonesia and English.",
+   "Thorough, proactive and able to work in a multidisciplinary research team."
+  ],
   "qualifications_id": [
    "Domisili Bandung.",
    "Lulusan S1/S2 atau mahasiswa tingkat akhir dari bidang Ekonomi, Keuangan, Manajemen, Energi, Kebijakan Publik, Teknik Industri, Statistika, atau bidang terkait.",
@@ -80,7 +117,12 @@
    "Memiliki kemampuan komunikasi tertulis dan verbal yang baik dalam Bahasa Indonesia dan Bahasa Inggris.",
    "Teliti, proaktif, dan mampu bekerja dalam tim riset multidisiplin."
   ],
-  "responsibilities_en": [],
+  "responsibilities_en": [
+   "Carry out research and projects in energy economics, finance and public policy, including data collection, analysis and reporting.",
+   "Conduct economic and financial analysis in the energy sector.",
+   "Contribute to presentations, policy briefs and scientific publications with the research team.",
+   "Take part in IEEF internal activities such as workshops, research discussions and multidisciplinary collaboration."
+  ],
   "responsibilities_id": [
    "Melakukan kegiatan penelitian dan proyek di bidang ekonomi energi, keuangan, dan kebijakan publik, termasuk pengumpulan data, analisis, dan penyusunan laporan.",
    "Melakukan analisis ekonomi dan finansial bidang energi.",
@@ -97,11 +139,21 @@
  },
  {
   "slug": "internship-program",
-  "title_en": null,
+  "title_en": "Internship",
   "title_id": "Internship",
-  "intro_en": null,
+  "intro_en": "IEEF offers students with a strong interest in learning and growing the chance to take part directly in research on economics, energy, finance and public policy. The internship is for candidates who want to understand strategic issues such as the energy transition, sustainable finance, economic policy, data analysis and evidence-based policy research.",
   "intro_id": "IEEF membuka kesempatan bagi mahasiswa yang memiliki ketertarikan kuat untuk belajar, berkembang, dan terlibat langsung dalam kegiatan riset di bidang ekonomi, energi, keuangan, dan kebijakan publik. Program internship ini ditujukan bagi kandidat yang ingin memahami isu-isu strategis seperti transisi energi, pembiayaan berkelanjutan, kebijakan ekonomi, analisis data, serta pengembangan riset berbasis evidence-based policy.",
-  "qualifications_en": [],
+  "qualifications_en": [
+   "Based in Bandung.",
+   "Current undergraduate student in at least the 4th semester, or current master's student.",
+   "Strong interest in research, economics, energy, finance and public policy.",
+   "Willing to learn and take part in academic and policy research.",
+   "Able to analyse data, search the literature and write academic texts.",
+   "Familiar with Microsoft Office or Google Workspace, Canva, social media and analytical tools for economics, energy and finance.",
+   "Good written and verbal communication in Bahasa Indonesia and English.",
+   "Thorough, proactive, responsible and able to work in a multidisciplinary team.",
+   "Curious about national and global strategic issues, especially the energy transition, economic development and sustainable finance."
+  ],
   "qualifications_id": [
    "Berdomisili di Bandung.",
    "Mahasiswa S1 ongoing minimal semester 4 atau mahasiswa S2 ongoing.",
@@ -113,7 +165,15 @@
    "Teliti, proaktif, bertanggung jawab, dan mampu bekerja dalam tim multidisiplin.",
    "Memiliki rasa ingin tahu yang tinggi terhadap isu strategis nasional dan global, terutama terkait transisi energi, pembangunan ekonomi, dan pembiayaan berkelanjutan."
   ],
-  "responsibilities_en": [],
+  "responsibilities_en": [
+   "Support the research team in collecting, processing and analysing quantitative and qualitative data.",
+   "Help prepare literature reviews, policy briefs, research reports and academic publications.",
+   "Carry out desk research on economics, energy, finance, sustainable development and public policy.",
+   "Help with data visualisation, charts, tables and research presentation materials.",
+   "Help coordinate project activities, including document preparation, minutes and technical administrative support.",
+   "Support activity and project reports and research communication materials.",
+   "Contribute to internal discussions to strengthen the quality of analysis and policy recommendations."
+  ],
   "responsibilities_id": [
    "Mendukung tim riset dalam pengumpulan, pengolahan, dan analisis data kuantitatif maupun kualitatif.",
    "Membantu penyusunan literature review, policy brief, laporan riset, dan publikasi akademik.",

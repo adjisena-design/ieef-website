@@ -1,6 +1,6 @@
 [
  {
-  "slug": "press-release-16",
+  "slug": "2027-state-budget-6-percent-growth-target",
   "date": "2026-09-30",
   "place": "Bandung",
   "title_en": "2027 State Budget Sets Rp4,106.26 Trillion in Spending and 6% Growth Target, Leaving Little Room for Error",
@@ -14,10 +14,11 @@
   "image": "repo:migrated/news/press-release-16.webp",
   "source_label": null,
   "source_url": null,
-  "published": true
+  "published": true,
+  "legacy_slug": "press-release-16"
  },
  {
-  "slug": "press-release-15",
+  "slug": "economy-grows-5-29-percent-q2-2026",
   "date": "2026-08-22",
   "place": "Bandung",
   "title_en": "Indonesia’s Economy Grows 5.29% in Second Quarter 2026, Anchored by Domestic Demand",
@@ -31,10 +32,11 @@
   "image": "repo:migrated/news/press-release-15.webp",
   "source_label": null,
   "source_url": null,
-  "published": true
+  "published": true,
+  "legacy_slug": "press-release-15"
  },
  {
-  "slug": "press-release-14",
+  "slug": "financial-market-pressure-real-sector",
   "date": "2026-08-20",
   "place": "Bandung",
   "title_en": "Financial Market Pressure Has Not Translated into Real Sector Weakness, SBM ITB Economist Says",
@@ -48,10 +50,11 @@
   "image": "repo:migrated/news/press-release-14.webp",
   "source_label": "itb.ac.id, August 20, 2026",
   "source_url": "https://itb.ac.id/berita/ekonom-itb-soroti-ketahanan-ekonomi-indonesia-pada-kuartal-ii-2026/63725",
-  "published": true
+  "published": true,
+  "legacy_slug": "press-release-14"
  },
  {
-  "slug": "press-release-13",
+  "slug": "lower-unemployment-formal-productive-jobs",
   "date": "2026-08-07",
   "place": "Jakarta",
   "title_en": "Lower Unemployment Must Be Accompanied by More Formal and Productive Jobs",
@@ -65,10 +68,11 @@
   "image": "repo:migrated/news/press-release-13.webp",
   "source_label": null,
   "source_url": null,
-  "published": true
+  "published": true,
+  "legacy_slug": "press-release-13"
  },
  {
-  "slug": "press-release-11",
+  "slug": "growth-that-benefits-the-public-kompas-tv",
   "date": "2026-06-24",
   "place": "Jakarta",
   "title_en": "Ir. Dzikri Firmansyah Hakam, S.T., Pg.Dip., M.Sc., Ph.D. Highlights the Importance of Economic Growth That Benefits the Public on Kompas Bisnis KompasTV",
@@ -82,10 +86,11 @@
   "image": "repo:migrated/news/press-release-11.webp",
   "source_label": null,
   "source_url": null,
-  "published": true
+  "published": true,
+  "legacy_slug": "press-release-11"
  },
  {
-  "slug": "press-release-12",
+  "slug": "growth-with-real-benefits-lemhannas-fgd",
   "date": "2026-06-24",
   "place": "Bandung",
   "title_en": "Ir. Dzikri Firmansyah Hakam, S.T., Pg.Dip., M.Sc., Ph.D. Highlights the Importance of Economic Growth That Delivers Real Benefits for Society at Lemhannas RI FGD",
@@ -99,10 +104,11 @@
   "image": "repo:migrated/news/press-release-12.webp",
   "source_label": null,
   "source_url": null,
-  "published": true
+  "published": true,
+  "legacy_slug": "press-release-12"
  },
  {
-  "slug": "press-release-9",
+  "slug": "sbm-itb-economist-on-kompas-tv",
   "date": "2026-06-17",
   "place": "Jakarta",
   "title_en": "SBM ITB Economist Featured on Kompas TV to Discuss Indonesia’s Economic Developments",
@@ -116,10 +122,11 @@
   "image": "repo:migrated/news/press-release-9.webp",
   "source_label": null,
   "source_url": null,
-  "published": true
+  "published": true,
+  "legacy_slug": "press-release-9"
  },
  {
-  "slug": "press-release-10",
+  "slug": "reclicks-grant-asean-electricity-market",
   "date": "2026-04-29",
   "place": "Jakarta",
   "title_en": "RECLICKS by PYC Awards Research Grant for ASEAN Electricity Market Integration Study",
@@ -133,10 +140,11 @@
   "image": "repo:migrated/news/press-release-10.webp",
   "source_label": null,
   "source_url": null,
-  "published": true
+  "published": true,
+  "legacy_slug": "press-release-10"
  },
  {
-  "slug": "press-release-8",
+  "slug": "itb-67th-dies-natalis-research-recognition",
   "date": "2026-03-02",
   "place": "Bandung",
   "title_en": "Research and Innovation Recognition at the 67th Dies Natalis of Institut Teknologi Bandung",
@@ -150,10 +158,11 @@
   "image": "repo:migrated/news/press-release-8.webp",
   "source_label": null,
   "source_url": null,
-  "published": true
+  "published": true,
+  "legacy_slug": "press-release-8"
  },
  {
-  "slug": "press-release-7",
+  "slug": "komdigi-ieef-sbm-itb-green-technology-industry",
   "date": "2026-02-02",
   "place": "Bandung, West Java",
   "title_en": "KOMDIGI, IEEF, and SBM ITB Discuss the Development of Indonesia’s Green Technology Industry",
@@ -167,10 +176,11 @@
   "image": "repo:migrated/news/press-release-7.webp",
   "source_label": null,
   "source_url": null,
-  "published": true
+  "published": true,
+  "legacy_slug": "press-release-7"
  },
  {
-  "slug": "press-release-3",
+  "slug": "financial-literacy-mertak-village-lombok",
   "date": "2026-01-09",
   "place": "Lombok Tengah",
   "title_en": "IEEF and SBM ITB Enhance Financial Literacy in Mertak Village, Central Lombok",
@@ -184,10 +194,11 @@
   "image": "repo:migrated/news/press-release-3.webp",
   "source_label": null,
   "source_url": null,
-  "published": true
+  "published": true,
+  "legacy_slug": "press-release-3"
  },
  {
-  "slug": "press-release-4",
+  "slug": "from-npv-to-enpv-energy-project-feasibility",
   "date": "2025-12-12",
   "place": "Jakarta",
   "title_en": "From NPV to ENPV: Integrating Multiplier Effects into Energy Project Feasibility Assessment",
@@ -201,10 +212,11 @@
   "image": "repo:migrated/news/press-release-4.webp",
   "source_label": null,
   "source_url": null,
-  "published": true
+  "published": true,
+  "legacy_slug": "press-release-4"
  },
  {
-  "slug": "press-release-6",
+  "slug": "csis-research-partnership-workshop",
   "date": "2025-12-12",
   "place": "Jakarta",
   "title_en": "IEEF Participates in Research Partnership Workshop #1 at CSIS Indonesia",
@@ -218,10 +230,11 @@
   "image": "repo:migrated/news/press-release-6.webp",
   "source_label": null,
   "source_url": null,
-  "published": true
+  "published": true,
+  "legacy_slug": "press-release-6"
  },
  {
-  "slug": "press-release-5",
+  "slug": "geo-dipa-geothermal-governance-leadership",
   "date": "2025-12-10",
   "place": "Bandung",
   "title_en": "IEEF–SBM ITB and PT Geo Dipa Energi (Persero) Strengthen Governance and Executive Leadership in the Geothermal Sector",
@@ -235,10 +248,11 @@
   "image": "repo:migrated/news/press-release-5.webp",
   "source_label": null,
   "source_url": null,
-  "published": true
+  "published": true,
+  "legacy_slug": "press-release-5"
  },
  {
-  "slug": "press-release-2",
+  "slug": "asahi-glass-foundation-grant-seminar-2025",
   "date": "2025-09-02",
   "place": "Bandung",
   "title_en": "Asahi Glass Foundation Grant Ceremony & Seminar on Research Findings 2025",
@@ -252,10 +266,11 @@
   "image": "repo:migrated/news/press-release-2.webp",
   "source_label": null,
   "source_url": null,
-  "published": true
+  "published": true,
+  "legacy_slug": "press-release-2"
  },
  {
-  "slug": "press-release-1",
+  "slug": "pyc-international-energy-conference-2025",
   "date": "2025-08-23",
   "place": "Jakarta",
   "title_en": "IEEF Hadiri PYC International Energy Conference 2025",
@@ -269,6 +284,7 @@
   "image": "repo:migrated/news/press-release-1.webp",
   "source_label": null,
   "source_url": null,
-  "published": true
+  "published": true,
+  "legacy_slug": "press-release-1"
  }
 ]

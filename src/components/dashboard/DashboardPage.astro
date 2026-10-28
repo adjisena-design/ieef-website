@@ -1,0 +1,58 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../PageHero.astro';
+import Icon from '../Icon.astro';
+import { getLang, href, DASHBOARDS } from '../../i18n/ui';
+import { dashboard as D } from '../../data/pages';
+
+const lang = getLang(Astro.url);
+const art = import.meta.glob<{ default: ImageMetadata }>('../../assets/art/dashboards/*.jpg', { eager: true });
+const items = DASHBOARDS.map((d) => ({ ...d, img: art[`../../assets/art/dashboards/${d.slug}.jpg`]?.default, info: D.info[d.slug] }));
+---
+<Base title={D.title[lang]} description={D.lede[lang]}>
+  <PageHero slot="hero" compact eyebrow="IEEF" title={D.title[lang]} lede={D.lede[lang]} />
+  <section class="section list">
+    <div class="wrap">
+      <div class="grid">
+        {items.map((d, i) => (
+          <a class="dcard" href={d.url} target="_blank" rel="noopener">
+            <div class="ph">
+              {d.img && <Image src={d.img} alt="" widths={[560, 900, 1200]} sizes="(max-width: 860px) 92vw, 600px" quality={74} loading={i < 2 ? 'eager' : 'lazy'} />}
+              <span class="tag">{d.tag[lang]}</span>
+              {d.info?.restricted && <span class="lock">{D.restricted[lang]}</span>}
+            </div>
+            <div class="txt">
+              <h2>{d.title[lang]}</h2>
+              {d.info && <p>{d.info.desc[lang]}</p>}
+              <span class="go">{D.open[lang]} <Icon name="external" size={16} /></span>
+            </div>
+          </a>
+        ))}
+      </div>
+      <p class="note">{D.restrictedNote[lang]} <a href={href(lang, '/contact-us')}>{D.request[lang]}</a></p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .list { padding-top: 24px; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; }
+  .dcard { display: flex; flex-direction: column; border-radius: var(--r-lg); overflow: hidden; background: var(--paper-card);
+    border: 1px solid rgba(19, 40, 63, .08); transition: transform .3s var(--ease-out, ease), box-shadow .3s var(--ease-out, ease); }
+  .dcard:hover { transform: translateY(-4px); box-shadow: 0 26px 46px -28px rgba(10, 40, 60, .5); }
+  .ph { position: relative; aspect-ratio: 1200 / 760; overflow: hidden; background: #dfe6e3; }
+  .ph :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease-out, ease); }
+  .dcard:hover .ph :global(img) { transform: scale(1.04); }
+  .tag, .lock { position: absolute; top: 16px; padding: 6px 12px; border-radius: var(--r-pill); font-size: .74rem; font-weight: 700; letter-spacing: .06em; }
+  .tag { left: 16px; background: rgba(251, 248, 240, .86); color: var(--navy); text-transform: uppercase; backdrop-filter: blur(6px); }
+  .lock { right: 16px; background: rgba(8, 30, 70, .6); color: #fff; backdrop-filter: blur(6px); }
+  .txt { display: flex; flex-direction: column; gap: 12px; padding: 26px 28px 28px; flex: 1; }
+  h2 { font-size: 1.3rem; }
+  .txt p { color: var(--muted); font-size: .94rem; }
+  .go { margin-top: auto; padding-top: 6px; display: inline-flex; align-items: center; gap: 8px; font-weight: 650; font-size: .9rem; color: var(--teal); }
+  .note { margin-top: 36px; color: var(--muted); font-size: .92rem; }
+  .note a { color: var(--teal); font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; gap: 24px; } }
+  @media (prefers-reduced-motion: reduce) { .dcard:hover { transform: none; } }
+</style>

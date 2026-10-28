@@ -6,7 +6,9 @@ import { NAV, t, href, getLang, alternate, languages } from '../i18n/ui';
 const lang = getLang(Astro.url);
 const alt = alternate(Astro.url);
 const here = lang === 'id' ? Astro.url.pathname.replace(/^\/id/, '') || '/' : Astro.url.pathname;
-const isActive = (p: string) => (p === '/' ? here === '/' : here.startsWith(p));
+// articles and profiles light up their parent section
+const SECTION: Record<string, string[]> = { '/news-and-article': ['/news/'], '/about-us': ['/team/'] };
+const isActive = (p: string) => (p === '/' ? here === '/' : here.startsWith(p) || (SECTION[p] ?? []).some((s) => here.startsWith(s)));
 ---
 <a class="skip" href="#main">{t(lang, 'nav.skip')}</a>
 <header class="navbar wrap">

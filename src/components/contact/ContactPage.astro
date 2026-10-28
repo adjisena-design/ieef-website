@@ -1,0 +1,135 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../PageHero.astro';
+import Icon from '../Icon.astro';
+import { getLang } from '../../i18n/ui';
+import { contact as C } from '../../data/pages';
+
+const lang = getLang(Astro.url);
+const SUPA_URL = import.meta.env.PUBLIC_SUPABASE_URL ?? '';
+const SUPA_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? '';
+---
+<Base title={C.title[lang]} description={C.lede[lang]}>
+  <PageHero slot="hero" compact eyebrow="IEEF" title={C.title[lang]} lede={C.lede[lang]} />
+  <section class="section body">
+    <div class="wrap layout">
+      <form class="form card card-paper" novalidate data-url={SUPA_URL} data-key={SUPA_KEY}
+        data-sending={C.sending[lang]} data-send={C.send[lang]} data-invalid={C.invalid[lang]} data-error={C.error[lang]}>
+        <h2>{C.formTitle[lang]}</h2>
+        <div class="row">
+          <label><span>{C.name[lang]}</span><input name="name" required maxlength="120" autocomplete="name" /></label>
+          <label><span>{C.email[lang]}</span><input name="email" type="email" required maxlength="200" autocomplete="email" /></label>
+        </div>
+        <div class="row">
+          <label><span>{C.organization[lang]} <em>({C.optional[lang]})</em></span><input name="organization" maxlength="200" autocomplete="organization" /></label>
+          <label><span>{C.subject[lang]}</span>
+            <select name="subject">{C.subjects.map((s) => <option value={s.en}>{s[lang]}</option>)}</select>
+          </label>
+        </div>
+        <label><span>{C.message[lang]}</span><textarea name="message" required minlength="5" maxlength="5000" rows="6"></textarea></label>
+        <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off" /></label>
+        <div class="foot">
+          <button class="btn-send" type="submit">{C.send[lang]} <Icon name="arrow" size={18} /></button>
+          <p class="privacy">{C.privacy[lang]}</p>
+        </div>
+        <p class="status" role="status" aria-live="polite"></p>
+        <div class="done" hidden>
+          <span class="tick" aria-hidden="true"></span>
+          <p>{C.thanks[lang]}</p>
+        </div>
+      </form>
+      <aside class="info">
+        <div class="card glass-dark reach">
+          <p class="eyebrow">{C.reach[lang]}</p>
+          <a class="line" href="mailto:ieef@ieef.or.id"><Icon name="mail" /> ieef@ieef.or.id</a>
+          <div class="line"><Icon name="pin" /><span><b>{C.address[lang]}</b>{C.addressText}</span></div>
+          <a class="map" href={C.mapUrl} target="_blank" rel="noopener">{C.map[lang]} <Icon name="external" size={16} /></a>
+          <p class="eyebrow follow">{C.follow[lang]}</p>
+          <div class="social">
+            <a href="https://www.instagram.com/ieefofficial" target="_blank" rel="noopener">Instagram</a>
+            <a href="https://www.linkedin.com/in/ieef" target="_blank" rel="noopener">LinkedIn</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('form.form')!;
+  const status = form.querySelector<HTMLElement>('.status')!;
+  const btn = form.querySelector<HTMLButtonElement>('.btn-send')!;
+  const started = Date.now();
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const d = form.dataset;
+    const f = new FormData(form);
+    const val = (k: string) => String(f.get(k) ?? '').trim();
+    const body = { name: val('name'), email: val('email'), organization: val('organization') || null, subject: val('subject') || null, message: val('message') };
+    status.textContent = '';
+    if (!body.name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(body.email) || body.message.length < 5) { status.textContent = d.invalid!; return; }
+    // bots: hidden field filled, or submitted within 3 seconds of loading
+    if (val('website') || Date.now() - started < 3000) { form.classList.add('sent'); form.querySelector<HTMLElement>('.done')!.hidden = false; return; }
+    btn.disabled = true; btn.firstChild!.textContent = d.sending! + ' ';
+    try {
+      const res = await fetch(`${d.url}/rest/v1/contact_messages`, {
+        method: 'POST',
+        headers: { apikey: d.key!, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      form.classList.add('sent');
+      form.querySelector<HTMLElement>('.done')!.hidden = false;
+    } catch {
+      status.textContent = d.error!;
+      btn.disabled = false; btn.firstChild!.textContent = d.send! + ' ';
+    }
+  });
+</script>
+
+<style>
+  .body { padding-top: 24px; }
+  .layout { display: grid; grid-template-columns: 1fr 380px; gap: 40px; align-items: start; }
+  .form { position: relative; display: grid; gap: 18px; padding: 36px; }
+  .form h2 { font-size: 1.5rem; margin-bottom: 4px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  label { display: grid; gap: 8px; }
+  label span { font-size: .84rem; font-weight: 650; color: var(--navy); }
+  label em { font-style: normal; font-weight: 500; color: var(--muted); }
+  input, select, textarea { font: inherit; font-size: .96rem; color: var(--ink); width: 100%; padding: 13px 15px; border-radius: 12px;
+    border: 1px solid rgba(19, 40, 63, .18); background: #fff; transition: border-color .2s, box-shadow .2s; }
+  textarea { resize: vertical; min-height: 150px; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 4px rgba(24, 144, 128, .15); }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .foot { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 22px; margin-top: 4px; }
+  .btn-send { display: inline-flex; align-items: center; gap: 10px; height: 52px; padding: 0 26px; border-radius: var(--r-pill);
+    background: var(--navy); color: #fff; font-weight: 650; transition: transform .2s var(--ease-out, ease), box-shadow .2s, opacity .2s; }
+  .btn-send:hover { transform: translateY(-2px); box-shadow: 0 14px 28px -16px rgba(8, 56, 104, .55); }
+  .btn-send:active { transform: scale(.96); }
+  .btn-send:disabled { opacity: .6; cursor: progress; transform: none; }
+  .privacy { font-size: .82rem; color: var(--muted); }
+  .status { color: #b4442e; font-size: .9rem; font-weight: 600; min-height: 1px; }
+  .done { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+    padding: 40px; text-align: center; border-radius: inherit; background: var(--paper-card); animation: fade .5s ease both; }
+  .done[hidden] { display: none; }
+  .done p { max-width: 380px; font-size: 1.05rem; color: var(--navy); font-weight: 600; }
+  .tick { width: 64px; height: 64px; border-radius: 50%; background: var(--teal); position: relative; }
+  .tick::after { content: ''; position: absolute; left: 22px; top: 16px; width: 14px; height: 26px; border: solid #fff; border-width: 0 4px 4px 0; transform: rotate(45deg); }
+  @keyframes fade { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: none; } }
+  .reach { padding: 32px; display: grid; gap: 18px; position: sticky; top: 24px; background: var(--navy); }
+  .reach .eyebrow { color: var(--mint); }
+  .line { display: flex; gap: 12px; align-items: flex-start; font-size: .95rem; line-height: 1.55; }
+  .line :global(svg) { flex: none; margin-top: 2px; color: var(--mint); }
+  .line b { display: block; font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: #9fb3c4; margin-bottom: 2px; }
+  a.line:hover { color: var(--mint); }
+  .map { display: inline-flex; align-items: center; gap: 8px; justify-self: start; height: 40px; padding: 0 16px; border-radius: var(--r-pill);
+    border: 1px solid rgba(255, 255, 255, .25); font-size: .86rem; font-weight: 600; }
+  .map:hover { background: rgba(255, 255, 255, .1); }
+  .follow { margin-top: 8px; }
+  .social { display: flex; gap: 10px; }
+  .social a { height: 38px; padding: 0 16px; display: inline-flex; align-items: center; border-radius: var(--r-pill); background: rgba(255, 255, 255, .1); font-size: .86rem; font-weight: 600; }
+  .social a:hover { background: rgba(255, 255, 255, .18); }
+  @media (max-width: 960px) { .layout { grid-template-columns: 1fr; } .reach { position: static; } }
+  @media (max-width: 560px) { .row { grid-template-columns: 1fr; } .form { padding: 24px; } }
+  @media (prefers-reduced-motion: reduce) { .done { animation: none; } }
+</style>

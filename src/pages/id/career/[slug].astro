@@ -1,0 +1,9 @@
+---
+import RolePage from '../../../components/career/RolePage.astro';
+import { getCareers, type Career } from '../../../lib/content';
+export async function getStaticPaths() {
+  return (await getCareers()).map((role) => ({ params: { slug: role.slug }, props: { role } }));
+}
+const { role } = Astro.props as { role: Career };
+---
+<RolePage role={role} />
