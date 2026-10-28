@@ -50,6 +50,9 @@ const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', qualit
       <source type="image/webp" srcset={heroWebp} sizes="100vw" />
       <img src={heroFallback.src} alt="" fetchpriority="high" decoding="async" />
     </picture>
+    <!-- looping painted animation; starts only when motion is welcome and the connection allows -->
+    <video class="hero-video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"
+      data-desktop="/media/hero-desktop.mp4" data-mobile="/media/hero-mobile.mp4"></video>
     <Nav />
     <div class="wrap hero-text">
       <p class="eyebrow line">{H.hero.eyebrow[lang]}</p>
@@ -174,11 +177,26 @@ const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', qualit
   <div class="strip" style={`background-image:url(${strip.src})`} aria-hidden="true"></div>
 </Base>
 
+<script>
+  const v = document.querySelector<HTMLVideoElement>('.hero-video');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const saveData = (navigator as any).connection?.saveData;
+  if (v && !reduce && !saveData) {
+    const mobile = window.matchMedia('(max-width: 640px)').matches;
+    v.src = mobile ? v.dataset.mobile! : v.dataset.desktop!;
+    v.addEventListener('playing', () => v.classList.add('on'), { once: true });
+    v.play().catch(() => {});
+  }
+</script>
+
 <style>
   /* hero */
   .hero { position: relative; min-height: 940px; padding-bottom: 200px; color: var(--navy); isolation: isolate; }
   .hero-art { position: absolute; inset: 0; z-index: -2; }
   .hero-art img { width: 100%; height: 100%; object-fit: cover; object-position: center bottom; }
+  .hero-video { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: center bottom;
+    opacity: 0; transition: opacity .8s ease; pointer-events: none; }
+  .hero-video.on { opacity: 1; }
   .hero::after { content: ''; position: absolute; inset: 0; z-index: -1;
     background: radial-gradient(ellipse 55% 70% at 18% 38%, rgba(232, 237, 238, .62), rgba(232, 237, 238, 0) 70%),
                 linear-gradient(90deg, rgba(226, 233, 236, .35), rgba(226, 233, 236, 0) 50%),

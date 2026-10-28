@@ -17,6 +17,10 @@ const indexable = import.meta.env.PUBLIC_INDEXABLE === 'true';
 <html lang={lang}>
 <head>
   <meta charset="utf-8" />
+  <script is:inline>
+    // enable the motion layer only when JS runs and the visitor hasn't asked for reduced motion
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('motion');
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{fullTitle}</title>
   <meta name="description" content={description} />
@@ -40,5 +44,28 @@ const indexable = import.meta.env.PUBLIC_INDEXABLE === 'true';
   <slot name="hero"><Nav /></slot>
   <main id="main"><slot /></main>
   <Footer />
+  <script>
+    // Scroll reveal: tag common blocks, stagger siblings, reveal when they enter the viewport.
+    const root = document.documentElement;
+    if (root.classList.contains('motion') && 'IntersectionObserver' in window) {
+      const SELECTORS = [
+        'main .section .eyebrow', 'main .section h2', 'main .section .lede', 'main .head', 'main .about > *',
+        'main .card', 'main .person', 'main .brief', 'main .fcard', 'main .door', 'main .facts li', 'main .expertise li',
+        'main .partners li', 'main .news', 'main .rlist li', 'main .mission li', 'main .vision', 'main .group h2',
+        'main .dusk-title', 'main .cta-box', 'main .bar .chip', 'main .platform', 'main .leader .excerpt',
+      ].join(',');
+      const els = Array.from(document.querySelectorAll<HTMLElement>(SELECTORS))
+        .filter((el) => !el.closest('[data-reveal]') && el.getBoundingClientRect().top > window.innerHeight * 0.9);
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+      els.forEach((el) => {
+        const sibs = el.parentElement ? Array.from(el.parentElement.children).filter((c) => els.includes(c as HTMLElement)) : [];
+        el.style.setProperty('--i', String(Math.min(sibs.indexOf(el), 6)));
+        el.setAttribute('data-reveal', '');
+        io.observe(el);
+      });
+    }
+  </script>
 </body>
 </html>

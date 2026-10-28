@@ -1,6 +1,7 @@
 @import '@fontsource-variable/plus-jakarta-sans';
 @import '@fontsource-variable/plus-jakarta-sans/wght-italic.css';
 @import './tokens.css';
+@import './motion.css';
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
