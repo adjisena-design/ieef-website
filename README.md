@@ -75,8 +75,8 @@ URLs keep the current site's slugs (`/about-us`, `/policy-brief`, `/research-pub
 |---|---|---|
 | 1 | Foundation: repo, design system, layout, nav/footer, EN/ID routing, homepage, preview pipeline | Done |
 | 2 | Content export from the old site, database schema and security, images migrated, homepage on live Supabase content, vector logo | Done |
-| 3 | About Us and 12 team profiles | Next |
-| 4 | Publications: policy briefs (10 new cover thumbnails), research list with year/topic filters | |
+| 3 | About Us and 12 team profiles (`/about-us`, `/team/<slug>`) | Done |
+| 4 | Publications: policy briefs (10 new cover thumbnails), research list with year/topic filters | Next |
 | 5 | News & Article (16 press releases, 3 articles), Career (4 roles), Contact (form saved to Supabase) | |
 | 6 | Team console: login for a small team to add news, briefs and photos from the browser | |
 | 7 | Bahasa Indonesia review, performance, SEO, redirects, accessibility | |

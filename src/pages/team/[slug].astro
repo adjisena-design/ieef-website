@@ -1,0 +1,9 @@
+---
+import ProfilePage from '../../components/team/ProfilePage.astro';
+import { getPeople, type Person } from '../../lib/content';
+export async function getStaticPaths() {
+  return (await getPeople()).map((person) => ({ params: { slug: person.slug }, props: { person } }));
+}
+const { person } = Astro.props as { person: Person };
+---
+<ProfilePage person={person} />

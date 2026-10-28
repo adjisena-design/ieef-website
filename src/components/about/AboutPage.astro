@@ -1,0 +1,159 @@
+---
+import { getImage } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../PageHero.astro';
+import PersonCard from '../team/PersonCard.astro';
+import Button from '../Button.astro';
+import duskArt from '../../assets/art/paint_dusk.jpg';
+import heroArt from '../../assets/art/paint_hero.jpg';
+import { getLang, href, t } from '../../i18n/ui';
+import { getPeople, getPublications, getPartners, pick, paragraphs } from '../../lib/content';
+import * as A from '../../data/about';
+
+const lang = getLang(Astro.url);
+const [people, pubs, partners] = await Promise.all([getPeople(), getPublications(), getPartners()]);
+const leaders = people.filter((p) => p.group === 'leadership');
+const researchers = people.filter((p) => p.group !== 'leadership');
+const dusk = await getImage({ src: duskArt, width: 2000, format: 'webp', quality: 66 });
+const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', quality: 64 });
+const firstSentences = (text: string | null, n = 2) =>
+  (paragraphs(text)[0] ?? '').split(/(?<=\.)\s+(?=[A-Z])/).slice(0, n).join(' ');
+const facts = [
+  { v: String(pubs.length), l: { en: 'Publications', id: 'Publikasi' } },
+  { v: String(people.length), l: { en: 'Experts and researchers', id: 'Pakar dan peneliti' } },
+  { v: String(A.expertise.length), l: { en: 'Fields of expertise', id: 'Bidang keahlian' } },
+  { v: String(partners.length), l: { en: 'Partners and collaborators', id: 'Mitra dan kolaborator' } },
+];
+---
+<Base title={A.hero.eyebrow[lang]} description={A.hero.lede[lang]}>
+  <PageHero slot="hero" eyebrow={A.hero.eyebrow[lang]} title={A.hero.title[lang]} lede={A.hero.lede[lang]} />
+
+  <section class="section intro">
+    <div class="wrap intro-grid">
+      <p class="platform">{A.platform[lang]}</p>
+      <ul class="facts">{facts.map((f) => <li><b>{f.v}</b><span>{f.l[lang]}</span></li>)}</ul>
+    </div>
+  </section>
+
+  <section class="section vm" style={`background-image:url(${dusk.src})`}>
+    <div class="wrap vm-grid">
+      <div class="vision glass-dark">
+        <p class="eyebrow">{A.vision.label[lang]}</p>
+        <blockquote>{A.vision.text[lang]}</blockquote>
+      </div>
+      <div class="mission glass-dark">
+        <p class="eyebrow">{A.mission.label[lang]}</p>
+        <ol>{A.mission.items.map((m, i) => <li><span>{String(i + 1).padStart(2, '0')}</span>{m[lang]}</li>)}</ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="expertise">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow">{A.expertiseHead.eyebrow[lang]}</p>
+        <h2>{A.expertiseHead.title[lang]}</h2>
+        <p class="lede">{A.expertiseHead.lede[lang]}</p>
+      </div>
+      <ol class="expertise">
+        {A.expertise.map((e, i) => (
+          <li>
+            <span class="n">{String(i + 1).padStart(2, '0')}</span>
+            <div><h3>{e.title[lang]}</h3><p>{e.body[lang]}</p></div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section team" id="team">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow">{A.team.eyebrow[lang]}</p>
+        <h2>{A.team.title[lang]}</h2>
+      </div>
+      <h3 class="group">{A.team.leadership[lang]}</h3>
+      <div class="leaders">
+        {leaders.map((p) => (
+          <div class="leader">
+            <PersonCard person={p} lang={lang} size="large" cta={A.team.viewProfile[lang]} />
+            <p class="excerpt">{firstSentences(pick(p, 'bio', lang))}</p>
+          </div>
+        ))}
+      </div>
+      <h3 class="group">{A.team.researchers[lang]}</h3>
+      <div class="grid">{researchers.map((p) => <PersonCard person={p} lang={lang} />)}</div>
+    </div>
+  </section>
+
+  <section class="cta" style={`background-image:url(${strip.src})`}>
+    <div class="wrap">
+      <div class="cta-box glass">
+        <h2>{A.cta.title[lang]}</h2>
+        <p>{A.cta.body[lang]}</p>
+        <div class="btns">
+          <Button href={href(lang, '/career')} icon="arrow">{A.cta.careers[lang]}</Button>
+          <Button href={href(lang, '/contact-us')} variant="glass">{A.cta.contact[lang]}</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .intro { padding-top: 40px; }
+  .intro-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 60px; align-items: center; }
+  .platform { font-size: 1.45rem; line-height: 1.45; color: var(--navy); font-weight: 600; letter-spacing: -.01em; }
+  .facts { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .facts li { background: var(--paper-card); border: 1px solid rgba(19, 40, 63, .08); border-radius: var(--r-md); padding: 20px 22px; }
+  .facts b { display: block; font-size: 2.2rem; font-weight: 800; color: var(--navy); letter-spacing: -.03em; line-height: 1; }
+  .facts span { color: var(--muted); font-size: .86rem; }
+
+  .vm { background-size: cover; background-position: center 35%; }
+  .vm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: stretch; }
+  .vision, .mission { border-radius: var(--r-lg); padding: 36px; }
+  .vm .eyebrow { color: var(--warm-soft); }
+  blockquote { margin-top: 18px; font-size: 1.7rem; line-height: 1.3; font-weight: 700; letter-spacing: -.02em; }
+  .mission ol { list-style: none; margin-top: 14px; }
+  .mission li { display: flex; gap: 16px; padding: 14px 0; border-top: 1px solid rgba(255, 255, 255, .18); font-size: 1rem; line-height: 1.5; }
+  .mission li:first-child { border-top: 0; }
+  .mission li span { color: var(--warm-soft); font-weight: 700; font-size: .85rem; padding-top: 3px; }
+
+  .head { max-width: 720px; margin-bottom: 40px; }
+  .head h2 { margin: 12px 0 14px; }
+  .expertise { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 0 48px; counter-reset: x; }
+  .expertise li { display: flex; gap: 20px; padding: 22px 0; border-top: 1px solid var(--line); }
+  .expertise .n { font-size: .85rem; font-weight: 700; color: var(--warm); padding-top: 3px; min-width: 22px; }
+  .expertise h3 { font-size: 1.04rem; }
+  .expertise p { color: var(--muted); font-size: .92rem; margin-top: 6px; }
+
+  .team { padding-top: 40px; }
+  .group { font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 8px 0 18px; font-weight: 700; }
+  .leaders { margin-bottom: 48px; }
+  .leader { display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: center; }
+  .excerpt { color: var(--ink); font-size: 1.05rem; line-height: 1.65; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+  .cta { background-size: cover; background-position: center 70%; padding: 120px 0; }
+  .cta-box { max-width: 640px; border-radius: var(--r-lg); padding: 36px; }
+  .cta-box p { color: #1f3a55; margin: 12px 0 24px; }
+  .btns { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  @media (max-width: 1080px) {
+    .grid { grid-template-columns: repeat(3, 1fr); }
+    .leader { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 860px) {
+    .intro-grid, .vm-grid, .expertise { grid-template-columns: 1fr; gap: 28px; }
+    .expertise { gap: 0; }
+    .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  }
+  @media (max-width: 640px) {
+    .platform { font-size: 1.15rem; }
+    .facts b { font-size: 1.7rem; }
+    .vision, .mission, .cta-box { padding: 24px; }
+    blockquote { font-size: 1.3rem; }
+    .cta { padding: 64px 0; }
+    .btns :global(.btn) { width: 100%; }
+  }
+</style>

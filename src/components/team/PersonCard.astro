@@ -1,0 +1,51 @@
+---
+import { Image } from 'astro:assets';
+import type { Person } from '../../lib/content';
+import { pick } from '../../lib/content';
+import { media } from '../../lib/media';
+import { href, type Lang } from '../../i18n/ui';
+import Icon from '../Icon.astro';
+
+interface Props { person: Person; lang: Lang; size?: 'normal' | 'large'; cta?: string }
+const { person, lang, size = 'normal', cta } = Astro.props;
+const photo = media(person.photo);
+const role = pick(person, 'role', lang);
+---
+<a class:list={['person', size]} href={href(lang, `/team/${person.slug}`)}>
+  <span class="ph">
+    {photo && typeof photo !== 'string'
+      ? <Image src={photo} alt="" widths={size === 'large' ? [480, 900] : [320, 640]} sizes={size === 'large' ? '(max-width: 640px) 90vw, 420px' : '(max-width: 640px) 45vw, 280px'} quality={78} />
+      : photo ? <img src={photo} alt="" loading="lazy" /> : null}
+  </span>
+  <span class="tx">
+    <strong>{person.name}</strong>
+    {role && <span class="role">{role}</span>}
+    {cta && <span class="go">{cta} <Icon name="arrow" size={16} /></span>}
+  </span>
+</a>
+
+<style>
+  .person { display: flex; flex-direction: column; border-radius: var(--r-lg); overflow: hidden; background: var(--paper-card);
+    border: 1px solid rgba(19, 40, 63, .08); transition: transform .18s ease, box-shadow .18s ease; height: 100%; }
+  .person:hover { transform: translateY(-3px); box-shadow: 0 22px 40px -26px rgba(10, 40, 60, .45); }
+  .ph { display: block; aspect-ratio: 4 / 5; background: #eaf1ef; overflow: hidden; }
+  .ph :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+  .tx { display: grid; gap: 6px; padding: 18px 20px 20px; }
+  strong { color: var(--navy); font-size: 1rem; line-height: 1.3; }
+  .role { color: var(--muted); font-size: .86rem; line-height: 1.4; }
+  .go { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; color: var(--teal); font-weight: 650; font-size: .88rem; }
+  .large { flex-direction: row; }
+  .large .ph { flex: 0 0 42%; aspect-ratio: auto; min-height: 380px; }
+  .large .tx { align-content: center; padding: 36px; gap: 10px; }
+  .large strong { font-size: 1.5rem; letter-spacing: -.015em; }
+  .large .role { font-size: 1rem; }
+  @media (max-width: 640px) {
+    .tx { padding: 14px 14px 16px; }
+    strong { font-size: .92rem; }
+    .role { font-size: .78rem; }
+    .large { flex-direction: column; }
+    .large .ph { min-height: 0; aspect-ratio: 4 / 5; }
+    .large .tx { padding: 22px; }
+    .large strong { font-size: 1.2rem; }
+  }
+</style>
