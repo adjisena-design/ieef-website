@@ -1,0 +1,56 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../PageHero.astro';
+import BriefCard from './BriefCard.astro';
+import { getBriefs } from '../../lib/content';
+import { THEMES, ui, type Theme } from '../../data/publications';
+import { getLang, t } from '../../i18n/ui';
+
+const lang = getLang(Astro.url);
+const briefs = await getBriefs();
+// cover variant = position among briefs of the same theme, so neighbours differ
+const seen: Record<string, number> = {};
+const items = briefs.map((b) => { const th = b.theme ?? 'energy'; const v = seen[th] ?? 0; seen[th] = v + 1; return { b, v }; });
+const themes = (Object.keys(THEMES) as Theme[]).filter((th) => briefs.some((b) => b.theme === th));
+---
+<Base title={ui.briefsTitle[lang]} description={ui.briefsLede[lang]}>
+  <PageHero slot="hero" compact eyebrow={t(lang, 'nav.publication')} title={ui.briefsTitle[lang]} lede={ui.briefsLede[lang]} />
+  <section class="section list">
+    <div class="wrap">
+      <div class="bar" role="toolbar" aria-label={ui.topic[lang]}>
+        <button class="chip on" data-f="all" aria-pressed="true">{ui.all[lang]} <span>{briefs.length}</span></button>
+        {themes.map((th) => (
+          <button class="chip" data-f={th} aria-pressed="false" style={`--c:${THEMES[th].color}`}>
+            <i></i>{THEMES[th].label[lang]} <span>{briefs.filter((b) => b.theme === th).length}</span>
+          </button>
+        ))}
+      </div>
+      <div class="grid">{items.map(({ b, v }, i) => <BriefCard pub={b} variant={v} lang={lang} eager={i < 3} />)}</div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>('.chip');
+  const cards = document.querySelectorAll<HTMLElement>('.grid > .brief');
+  chips.forEach((c) => c.addEventListener('click', () => {
+    const f = c.dataset.f;
+    chips.forEach((x) => { const on = x === c; x.classList.toggle('on', on); x.setAttribute('aria-pressed', String(on)); });
+    cards.forEach((card) => { card.hidden = f !== 'all' && card.dataset.theme !== f; });
+  }));
+</script>
+
+<style>
+  .list { padding-top: 24px; }
+  .bar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 40px; }
+  .chip { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: var(--r-pill);
+    border: 1px solid rgba(19, 40, 63, .16); background: var(--paper-card); color: var(--navy); font-weight: 600; font-size: .88rem; }
+  .chip i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); }
+  .chip span { color: var(--muted); font-weight: 500; }
+  .chip.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .chip.on span { color: rgba(255, 255, 255, .7); }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px 36px; }
+  .grid > :global([hidden]) { display: none; }
+  @media (max-width: 1000px) { .grid { grid-template-columns: repeat(2, 1fr); gap: 44px 24px; } }
+  @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } .bar { gap: 8px; } .chip { height: 38px; font-size: .82rem; } }
+</style>

@@ -16,7 +16,7 @@ export type Person = {
 export type Publication = {
   kind: 'policy_brief' | 'research'; slug: string; title: string;
   summary_en: string | null; summary_id: string | null; year: number | null; published_on: string | null;
-  theme: 'energy' | 'social' | 'economy' | null; pdf_url: string | null; journal_url: string | null;
+  theme: 'energy' | 'social' | 'economy' | null; cover_scene: string | null; pdf_url: string | null; journal_url: string | null;
   cover: string | null; featured: boolean; sort: number; published: boolean;
 };
 export type News = {

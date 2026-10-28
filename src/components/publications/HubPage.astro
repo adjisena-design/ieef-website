@@ -1,0 +1,118 @@
+---
+import { getImage } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../PageHero.astro';
+import BriefCover from './BriefCover.astro';
+import BriefCard from './BriefCard.astro';
+import Button from '../Button.astro';
+import Icon from '../Icon.astro';
+import duskArt from '../../assets/art/paint_dusk.jpg';
+import { getBriefs, getResearch } from '../../lib/content';
+import { ui } from '../../data/publications';
+import { getLang, href } from '../../i18n/ui';
+
+const lang = getLang(Astro.url);
+const [briefs, research] = await Promise.all([getBriefs(), getResearch()]);
+const seen: Record<string, number> = {};
+const withVariant = briefs.map((b) => { const th = b.theme ?? 'energy'; const v = seen[th] ?? 0; seen[th] = v + 1; return { b, v }; });
+const latest = withVariant.slice(0, 3);
+const stack = withVariant.slice(0, 3).reverse();
+const dusk = await getImage({ src: duskArt, width: 1200, format: 'webp', quality: 64 });
+const recent = research.slice(0, 6);
+const years = research.map((r) => r.year).filter(Boolean) as number[];
+const span = years.length ? `${Math.min(...years)}–${Math.max(...years)}` : '';
+---
+<Base title={ui.hubEyebrow[lang]} description={ui.hubLede[lang]}>
+  <PageHero slot="hero" compact eyebrow={ui.hubEyebrow[lang]} title={ui.hubTitle[lang]} lede={ui.hubLede[lang]} />
+
+  <section class="section doors">
+    <div class="wrap dgrid">
+      <a class="door briefs" href={href(lang, '/policy-brief')}>
+        <div class="stack">{stack.map(({ b, v }) => <div class="s"><BriefCover pub={b} variant={v} lang={lang} eager /></div>)}</div>
+        <div class="tx">
+          <span class="n">{briefs.length} {ui.briefs[lang]}</span>
+          <h2>{ui.briefsTitle[lang]}</h2>
+          <p>{ui.briefsLede[lang]}</p>
+          <span class="go">{ui.viewAllBriefs[lang]} <Icon name="arrow" size={18} /></span>
+        </div>
+      </a>
+      <a class="door research" href={href(lang, '/research-publication')} style={`background-image:url(${dusk.src})`}>
+        <div class="tx glass-dark">
+          <span class="n">{research.length} {ui.papers[lang]}{span && ` · ${span}`}</span>
+          <h2>{ui.researchTitle[lang]}</h2>
+          <p>{ui.researchLede[lang]}</p>
+          <span class="go">{ui.viewAllResearch[lang]} <Icon name="arrow" size={18} /></span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="section latest">
+    <div class="wrap">
+      <div class="head"><h2>{ui.latestBriefs[lang]}</h2><Button href={href(lang, '/policy-brief')} variant="ghost" icon="arrow">{ui.viewAllBriefs[lang]}</Button></div>
+      <div class="bgrid">{latest.map(({ b, v }) => <BriefCard pub={b} variant={v} lang={lang} compact />)}</div>
+    </div>
+  </section>
+
+  <section class="section latest-r">
+    <div class="wrap">
+      <div class="head"><h2>{ui.latestResearch[lang]}</h2><Button href={href(lang, '/research-publication')} variant="ghost" icon="arrow">{ui.viewAllResearch[lang]}</Button></div>
+      <ul class="rlist">
+        {recent.map((r) => (
+          <li><a href={r.journal_url ?? '#'} target="_blank" rel="noopener"><b>{r.year}</b><span>{r.title}</span><Icon name="external" size={16} /></a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .doors { padding-top: 24px; }
+  .dgrid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 20px; }
+  .door { position: relative; border-radius: var(--r-lg); overflow: hidden; min-height: 460px; display: flex; transition: transform .2s ease; }
+  .door:hover { transform: translateY(-3px); }
+  .briefs { background: var(--paper-card); border: 1px solid rgba(19, 40, 63, .08); align-items: center; gap: 12px; padding: 36px; }
+  .stack { position: relative; flex: 0 0 44%; height: 340px; }
+  .s { position: absolute; width: 62%; top: 0; transform-origin: bottom left; }
+  .s:nth-child(1) { left: 0; transform: rotate(-7deg); top: 26px; }
+  .s:nth-child(2) { left: 18%; transform: rotate(-2deg); top: 12px; }
+  .s:nth-child(3) { left: 36%; transform: rotate(3deg); }
+  .briefs .tx { flex: 1; }
+  .research { background-size: cover; background-position: center 40%; align-items: flex-end; padding: 24px; }
+  .research .tx { border-radius: var(--r-md); padding: 28px; }
+  .n { font-size: .76rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--teal); }
+  .research .n { color: var(--warm-soft); }
+  .door h2 { font-size: 1.9rem; margin: 10px 0 12px; }
+  .research h2 { color: #fff; }
+  .door p { color: var(--muted); font-size: .94rem; }
+  .research p { color: rgba(255, 255, 255, .86); }
+  .go { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; font-weight: 700; color: var(--navy); }
+  .research .go { color: #fff; }
+  .head { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 32px; }
+  .head h2 { font-size: 1.8rem; }
+  .latest, .latest-r { padding-top: 40px; }
+  .bgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; }
+  .rlist { list-style: none; border-top: 1px solid var(--line); }
+  .rlist a { display: grid; grid-template-columns: 64px 1fr auto; gap: 16px; align-items: start; padding: 18px 0; border-bottom: 1px solid var(--line); color: var(--navy); }
+  .rlist b { color: var(--warm); font-size: .9rem; }
+  .rlist span { font-weight: 600; line-height: 1.45; }
+  .rlist a:hover span { color: var(--teal); }
+  .rlist :global(svg) { color: var(--muted); margin-top: 3px; }
+  @media (max-width: 1000px) {
+    .dgrid { grid-template-columns: 1fr; }
+    .bgrid { grid-template-columns: repeat(2, 1fr); }
+    .bgrid > :global(:nth-child(3)) { display: none; }
+  }
+  @media (max-width: 640px) {
+    .briefs { flex-direction: column; padding: 24px; align-items: stretch; }
+    .stack { flex: none; height: 300px; width: 100%; max-width: 360px; margin: 0 auto; }
+    .door { min-height: 0; }
+    .door h2 { font-size: 1.5rem; }
+    .research { min-height: 380px; padding: 14px; }
+    .research .tx { padding: 22px; }
+    .bgrid { grid-template-columns: 1fr; }
+    .bgrid > :global(:nth-child(3)) { display: flex; }
+    .rlist a { grid-template-columns: 48px 1fr; }
+    .rlist :global(svg) { display: none; }
+  }
+</style>

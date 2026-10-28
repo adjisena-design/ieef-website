@@ -1,0 +1,165 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../PageHero.astro';
+import Icon from '../Icon.astro';
+import { getResearch } from '../../lib/content';
+import { TOPICS, topicsFor, ui } from '../../data/publications';
+import { getLang, t } from '../../i18n/ui';
+
+const lang = getLang(Astro.url);
+const research = await getResearch();
+const featured = research.filter((r) => r.featured);
+const rows = research.map((r) => ({ ...r, topics: topicsFor(r.title) }));
+const years = [...new Set(rows.map((r) => r.year).filter(Boolean))].sort((a, b) => (b as number) - (a as number)) as number[];
+const topics = TOPICS.filter((tp) => rows.some((r) => r.topics.includes(tp.key)));
+const host = (u: string | null) => { try { return u ? new URL(u).hostname.replace(/^www\./, '') : ''; } catch { return ''; } };
+const groups = [...years.map((y) => ({ y, items: rows.filter((r) => r.year === y) })), { y: null, items: rows.filter((r) => !r.year) }]
+  .filter((g) => g.items.length);
+---
+<Base title={ui.researchTitle[lang]} description={ui.researchLede[lang]}>
+  <PageHero slot="hero" compact art="dusk" eyebrow={t(lang, 'nav.publication')} title={ui.researchTitle[lang]} lede={ui.researchLede[lang]} />
+
+  {featured.length > 0 && (
+    <section class="section feat">
+      <div class="wrap">
+        <p class="eyebrow">{ui.highlighted[lang]}</p>
+        <div class="fgrid">
+          {featured.map((r) => (
+            <a class="fcard" href={r.journal_url ?? '#'} target="_blank" rel="noopener">
+              <span class="y">{r.year ?? ''}</span>
+              <h3>{r.title}</h3>
+              <span class="src">{host(r.journal_url)} <Icon name="external" size={14} /></span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section all">
+    <div class="wrap">
+      <div class="tools">
+        <label class="search">
+          <span class="sr-only">{ui.search[lang]}</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+          <input type="search" id="q" placeholder={ui.search[lang]} autocomplete="off" />
+        </label>
+        <label class="sel">
+          <span class="sr-only">{ui.year[lang]}</span>
+          <select id="year">
+            <option value="">{ui.anyYear[lang]}</option>
+            {years.map((y) => <option value={y}>{y}</option>)}
+          </select>
+        </label>
+      </div>
+      <div class="topics" role="toolbar" aria-label={ui.topic[lang]}>
+        <button class="chip on" data-t="" aria-pressed="true">{ui.all[lang]}</button>
+        {topics.map((tp) => <button class="chip" data-t={tp.key} aria-pressed="false">{tp.label[lang]}</button>)}
+      </div>
+      <p class="count" aria-live="polite"><span id="shown">{rows.length}</span> {ui.of[lang]} {rows.length} {ui.papers[lang]}</p>
+
+      <div id="list">
+        {groups.map((g) => (
+          <div class="group" data-group={g.y ?? 'none'}>
+            <h2 class="gy">{g.y ?? ui.noYear[lang]}</h2>
+            <ul>
+              {g.items.map((r) => (
+                <li data-year={r.year ?? ''} data-topics={r.topics.join(' ')} data-text={r.title.toLowerCase()}>
+                  <a href={r.journal_url ?? '#'} target="_blank" rel="noopener">
+                    <span class="tt">{r.title}</span>
+                    <span class="mt">
+                      {r.topics.slice(0, 2).map((k) => <span class="tag">{TOPICS.find((tp) => tp.key === k)!.label[lang]}</span>)}
+                      <span class="src">{host(r.journal_url)}</span>
+                    </span>
+                  </a>
+                  <Icon name="external" size={18} class="ext" />
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <div class="empty" hidden>
+        <p>{ui.none[lang]}</p>
+        <button id="reset" class="chip">{ui.reset[lang]}</button>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const q = document.getElementById('q') as HTMLInputElement;
+  const year = document.getElementById('year') as HTMLSelectElement;
+  const chips = document.querySelectorAll<HTMLButtonElement>('.topics .chip');
+  const items = document.querySelectorAll<HTMLElement>('#list li');
+  const groups = document.querySelectorAll<HTMLElement>('#list .group');
+  const shown = document.getElementById('shown')!;
+  const empty = document.querySelector<HTMLElement>('.empty')!;
+  let topic = '';
+  function apply() {
+    const term = q.value.trim().toLowerCase();
+    let n = 0;
+    items.forEach((li) => {
+      const ok = (!term || li.dataset.text!.includes(term)) && (!year.value || li.dataset.year === year.value)
+        && (!topic || li.dataset.topics!.split(' ').includes(topic));
+      li.hidden = !ok; if (ok) n++;
+    });
+    groups.forEach((g) => { g.hidden = !g.querySelector('li:not([hidden])'); });
+    shown.textContent = String(n);
+    empty.hidden = n > 0;
+  }
+  q.addEventListener('input', apply);
+  year.addEventListener('change', apply);
+  chips.forEach((c) => c.addEventListener('click', () => {
+    topic = c.dataset.t ?? '';
+    chips.forEach((x) => { x.classList.toggle('on', x === c); x.setAttribute('aria-pressed', String(x === c)); });
+    apply();
+  }));
+  document.getElementById('reset')!.addEventListener('click', () => { q.value = ''; year.value = ''; (chips[0] as HTMLButtonElement).click(); });
+</script>
+
+<style>
+  .feat { padding-top: 24px; padding-bottom: 40px; }
+  .fgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-top: 18px; }
+  .fcard { display: flex; flex-direction: column; gap: 10px; padding: 22px; border-radius: var(--r-md); background: var(--navy); color: #fff;
+    min-height: 220px; transition: transform .15s ease; }
+  .fcard:hover { transform: translateY(-3px); }
+  .fcard .y { color: var(--warm-soft); font-weight: 700; font-size: .8rem; }
+  .fcard h3 { color: #fff; font-size: 1rem; line-height: 1.35; }
+  .fcard .src { margin-top: auto; display: inline-flex; gap: 6px; align-items: center; font-size: .78rem; color: rgba(255, 255, 255, .7); }
+  .all { padding-top: 40px; }
+  .tools { display: flex; gap: 12px; flex-wrap: wrap; }
+  .search { flex: 1 1 320px; display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 18px; border-radius: var(--r-pill);
+    background: #fff; border: 1px solid rgba(19, 40, 63, .14); color: var(--muted); }
+  .search input { flex: 1; border: 0; outline: 0; font: inherit; color: var(--ink); background: transparent; }
+  .search:focus-within { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(24, 144, 128, .15); }
+  .sel select { height: 52px; padding: 0 40px 0 18px; border-radius: var(--r-pill); border: 1px solid rgba(19, 40, 63, .14); background: #fff;
+    font: inherit; color: var(--navy); font-weight: 600; appearance: none; cursor: pointer;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23083868' stroke-width='2.2'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat: no-repeat; background-position: right 16px center; }
+  .topics { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .chip { height: 38px; padding: 0 14px; border-radius: var(--r-pill); border: 1px solid rgba(19, 40, 63, .16); background: var(--paper-card);
+    color: var(--navy); font-weight: 600; font-size: .84rem; }
+  .chip.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .count { margin: 22px 0 8px; color: var(--muted); font-size: .88rem; }
+  .group { margin-top: 26px; }
+  .group[hidden], li[hidden] { display: none; }
+  .gy { font-size: 1.05rem; color: var(--warm); letter-spacing: .02em; padding-bottom: 10px; border-bottom: 2px solid var(--line); }
+  ul { list-style: none; }
+  li { position: relative; border-bottom: 1px solid var(--line); }
+  li a { display: block; padding: 18px 48px 18px 0; }
+  li a:hover .tt { color: var(--teal); }
+  .tt { display: block; color: var(--navy); font-weight: 600; font-size: 1rem; line-height: 1.45; transition: color .15s; }
+  .mt { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
+  .tag { font-size: .72rem; font-weight: 600; padding: 3px 10px; border-radius: var(--r-pill); background: var(--sage); color: #2c5a4f; }
+  .mt .src { font-size: .78rem; color: var(--muted); }
+  li :global(.ext) { position: absolute; right: 8px; top: 22px; color: var(--muted); pointer-events: none; }
+  .empty { padding: 48px 0; text-align: center; color: var(--muted); }
+  .empty .chip { margin-top: 12px; }
+  @media (max-width: 640px) {
+    .search, .sel select { height: 46px; }
+    .sel { flex: 1 1 100%; } .sel select { width: 100%; }
+    .tt { font-size: .94rem; }
+    .fcard { min-height: 0; }
+  }
+</style>

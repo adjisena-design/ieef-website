@@ -17,9 +17,16 @@ bottoms = {n: placement(n)[2] + 1200 * placement(n)[0] for n in FACES}
 print({k[:12]: round(v) for k, v in bottoms.items()})
 
 sess = new_session('isnet-general-use')
+import os
+ONLY = os.environ.get('ONLY')
 for n in sorted(FACES):
-    remove(Image.open(SRC + n + '.png').convert('RGB'), session=sess).save('cut_' + n + '.png')
-    person = clean('cut_' + n + '.png')
+    if ONLY and n != ONLY: continue
+    fixed = f'cut_{n.split("-")[0]}_fixed.png'
+    if os.path.exists(fixed):          # hand-checked cutout (e.g. watermark touching the figure)
+        person = Image.open(fixed).convert('RGBA')
+    else:
+        remove(Image.open(SRC + n + '.png').convert('RGB'), session=sess).save('cut_' + n + '.png')
+        person = clean('cut_' + n + '.png')
     s, ox, oy = placement(n)
     person = person.resize((round(person.width * s), round(person.height * s)), Image.LANCZOS)
     if s > 1.15:   # light sharpening for enlarged originals

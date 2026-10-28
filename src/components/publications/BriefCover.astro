@@ -1,0 +1,78 @@
+---
+// Painted policy-brief cover drawn in HTML/CSS over a scene from the cover library.
+// Priority: uploaded cover image > chosen cover_scene > a scene that suits the brief's theme.
+import { getImage } from 'astro:assets';
+import type { Publication } from '../../lib/content';
+import { media } from '../../lib/media';
+import { THEMES, type Theme } from '../../data/publications';
+import logo from '../../assets/brand/logo.svg';
+import type { Lang } from '../../i18n/ui';
+
+interface Props { pub: Publication; variant?: number; lang: Lang; eager?: boolean }
+const { pub, variant = 0, lang, eager = false } = Astro.props;
+const theme = (pub.theme ?? 'energy') as Theme;
+
+const scenes = import.meta.glob<{ default: ImageMetadata }>('../../assets/art/scenes/*.jpg', { eager: true });
+const sceneImg = (name: string) => scenes[`../../assets/art/scenes/${name}.jpg`]?.default;
+const FALLBACK: Record<Theme, string[]> = {
+  energy: ['solar', 'offshore-wind', 'grid', 'ev-road', 'hydro-village', 'rec-singapore', 'ev-city'],
+  social: ['school', 'hydro-village'],
+  economy: ['city', 'port', 'grid'],
+};
+const sceneName = pub.cover_scene && sceneImg(pub.cover_scene) ? pub.cover_scene : FALLBACK[theme][variant % FALLBACK[theme].length];
+const art = await getImage({ src: sceneImg(sceneName)!, width: 760, format: 'webp', quality: 68 });
+
+const uploaded = media(pub.cover);
+const uploadedSrc = uploaded && typeof uploaded !== 'string'
+  ? (await getImage({ src: uploaded, width: 760, format: 'webp' })).src
+  : uploaded;
+
+const [main, ...rest] = pub.title.split(':');
+const sub = rest.join(':').trim();
+const date = pub.published_on
+  ? new Date(pub.published_on + 'T00:00:00').toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-GB', { month: 'long', year: 'numeric' })
+  : '';
+---
+<div class="cover" style={`--accent:${THEMES[theme].color}`}>
+  {uploadedSrc ? (
+    <img class="art" src={uploadedSrc} alt="" loading={eager ? 'eager' : 'lazy'} />
+  ) : (
+    <>
+      <img class="art" src={art.src} alt="" loading={eager ? 'eager' : 'lazy'} decoding="async" />
+      <div class="veil"></div>
+      <div class="content" aria-hidden="true">
+        <div class="top">
+          <span class="logo"><img src={logo.src} alt="" /></span>
+          {date && <span class="date">{date}</span>}
+        </div>
+        <div class="titles">
+          <span class="theme">{THEMES[theme].label[lang]}</span>
+          <span class="main">{main.trim()}</span>
+          {sub && <span class="sub">{sub}</span>}
+        </div>
+        <div class="bar"><span>Policy Brief</span><span>ieef.or.id</span></div>
+      </div>
+    </>
+  )}
+</div>
+
+<style>
+  .cover { position: relative; container-type: inline-size; aspect-ratio: 1 / 1.414; overflow: hidden; border-radius: 6px;
+    background: #dfe6e3; box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset, 0 22px 40px -24px rgba(10, 30, 50, .55); }
+  .art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center bottom; }
+  .veil { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255, 255, 255, .32), rgba(255, 255, 255, 0) 50%); }
+  .content { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 6cqw 6.5cqw 5.5cqw; color: #0b2f57; }
+  .top { display: flex; justify-content: space-between; align-items: center; }
+  .logo { background: rgba(251, 248, 240, .7); border-radius: 2.6cqw; padding: 1.4cqw 2cqw; }
+  .logo img { height: 6.4cqw; width: auto; display: block; }
+  .date { font-size: 2.6cqw; font-weight: 700; }
+  .titles { margin-top: 10cqw; display: flex; flex-direction: column; gap: 2.4cqw; }
+  .theme { display: flex; align-items: center; gap: 1.8cqw; font-size: 2.3cqw; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  .theme::before { content: ''; width: 5cqw; height: .45cqw; background: currentColor; }
+  .main { font-size: 7.2cqw; line-height: 1.05; font-weight: 800; letter-spacing: -.03em; }
+  .sub { font-size: 3.4cqw; line-height: 1.35; font-weight: 500; opacity: .9; max-width: 94%; }
+  .bar { margin-top: auto; display: flex; justify-content: space-between; align-items: center; padding: 2.6cqw 3.4cqw; border-radius: 2.6cqw;
+    background: rgba(8, 30, 70, .42); border: 1px solid rgba(255, 255, 255, .22); backdrop-filter: blur(8px);
+    color: #fff; font-size: 2.4cqw; font-weight: 600; }
+  .bar span:first-child { color: #ffd6a8; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; }
+</style>

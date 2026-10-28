@@ -54,6 +54,7 @@ sql.append(insert('people', [{
     'bio_en': '\n\n'.join(p['bio']), 'bio_id': None, 'photo': 'repo:' + p['photo_local'],
     'social_url': p['social'], 'sort': p['sort'], 'published': True} for p in people]))
 
+SCENES = {1: 'solar', 2: 'school', 3: 'city', 4: 'port', 5: 'offshore-wind', 6: 'grid', 7: 'rec-singapore', 8: 'ev-road', 9: 'ev-city', 10: 'hydro-village'}
 THEMES = {1: 'energy', 2: 'social', 3: 'economy', 4: 'economy', 5: 'energy', 6: 'economy', 7: 'energy', 8: 'energy', 9: 'energy', 10: 'energy'}
 briefs = json.loads((C / 'policy-briefs.json').read_text())
 rows = []
@@ -63,7 +64,7 @@ for b in briefs:
     rows.append({'kind': 'policy_brief', 'slug': slug, 'title': title,
                  'summary_en': None, 'summary_id': None,
                  'year': int(b['published'][:4]) if b.get('published') else None, 'published_on': b.get('published'),
-                 'theme': THEMES[b['sort']], 'pdf_url': b['pdf_url'], 'journal_url': b['journal_url'], 'cover': None,
+                 'theme': THEMES[b['sort']], 'cover_scene': SCENES[b['sort']], 'pdf_url': b['pdf_url'], 'journal_url': b['journal_url'], 'cover': None,
                  'featured': b['sort'] == 1, 'sort': b['sort'], 'published': True})
 research = json.loads((C / 'research.json').read_text())
 seen = {r['slug'] for r in rows}
@@ -72,7 +73,7 @@ for i, r in enumerate(research):
     while s in seen: s += '-r'
     seen.add(s)
     rows.append({'kind': 'research', 'slug': s, 'title': r['title'], 'summary_en': None, 'summary_id': None,
-                 'year': r['year'], 'published_on': None, 'theme': None, 'pdf_url': None, 'journal_url': r['url'], 'cover': None,
+                 'year': r['year'], 'published_on': None, 'theme': None, 'cover_scene': None, 'pdf_url': None, 'journal_url': r['url'], 'cover': None,
                  'featured': bool(r.get('featured')), 'sort': i + 1, 'published': True})
 sql.append(insert('publications', rows))
 

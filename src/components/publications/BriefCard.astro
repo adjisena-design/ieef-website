@@ -1,0 +1,47 @@
+---
+import BriefCover from './BriefCover.astro';
+import Icon from '../Icon.astro';
+import type { Publication } from '../../lib/content';
+import { pick } from '../../lib/content';
+import { THEMES, ui, type Theme } from '../../data/publications';
+import type { Lang } from '../../i18n/ui';
+
+interface Props { pub: Publication; variant: number; lang: Lang; eager?: boolean; compact?: boolean }
+const { pub, variant, lang, eager, compact = false } = Astro.props;
+const theme = (pub.theme ?? 'energy') as Theme;
+const summary = pick(pub, 'summary', lang);
+const date = pub.published_on
+  ? new Date(pub.published_on + 'T00:00:00').toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-GB', { month: 'long', year: 'numeric' })
+  : null;
+---
+<article class:list={['brief', { compact }]} id={pub.slug} data-theme={theme}>
+  <a class="cv" href={pub.pdf_url ?? pub.journal_url ?? '#'} target="_blank" rel="noopener" aria-label={`${ui.download[lang]}: ${pub.title}`}>
+    <BriefCover pub={pub} variant={variant} lang={lang} eager={eager} />
+  </a>
+  <div class="meta">
+    <span class="k" style={`color:${THEMES[theme].color}`}>{THEMES[theme].label[lang]}{date && <span class="d"> · {date}</span>}</span>
+    <h3>{pub.title}</h3>
+    {summary && !compact && <p>{summary}</p>}
+    <div class="acts">
+      {pub.pdf_url && <a class="btn-s solid" href={pub.pdf_url} target="_blank" rel="noopener"><Icon name="download" size={16} /> {ui.download[lang]}</a>}
+      {pub.journal_url && <a class="btn-s" href={pub.journal_url} target="_blank" rel="noopener">{ui.journal[lang]} <Icon name="external" size={15} /></a>}
+    </div>
+  </div>
+</article>
+
+<style>
+  .brief { display: flex; flex-direction: column; gap: 18px; scroll-margin-top: 24px; }
+  .cv { display: block; transition: transform .2s ease; }
+  .cv:hover { transform: translateY(-4px) rotate(-.3deg); }
+  .k { font-size: .74rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+  .d { color: var(--muted); }
+  h3 { font-size: 1.04rem; line-height: 1.35; margin-top: 8px; }
+  p { color: var(--muted); font-size: .9rem; margin-top: 8px; }
+  .acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .btn-s { display: inline-flex; align-items: center; gap: 7px; height: 38px; padding: 0 14px; border-radius: var(--r-pill);
+    border: 1.5px solid var(--navy); color: var(--navy); font-size: .82rem; font-weight: 650; }
+  .btn-s.solid { background: var(--navy); color: #fff; }
+  .compact h3 { font-size: .96rem; }
+  .brief:target .cv :global(.cover) { outline: 3px solid var(--warm); outline-offset: 4px; }
+  @media (max-width: 640px) { .btn-s { height: 36px; font-size: .78rem; } }
+</style>
