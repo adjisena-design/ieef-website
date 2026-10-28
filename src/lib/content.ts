@@ -37,16 +37,26 @@ const URL_ = import.meta.env.PUBLIC_SUPABASE_URL as string | undefined;
 const KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY as string | undefined;
 export const source: 'supabase' | 'snapshot' = URL_ && KEY ? 'supabase' : 'snapshot';
 
+// On Cloudflare (WORKERS_CI) a database error fails the build, so stale content is never published.
+// Elsewhere (local machines without network access to Supabase) it falls back to the snapshot.
+const IN_CI = typeof process !== 'undefined' && !!process.env.WORKERS_CI;
 const cache = new Map<string, Promise<unknown[]>>();
 function table<T>(name: string, order: string, snapshot: unknown[]): Promise<T[]> {
+  const fromSnapshot = () => (snapshot as T[]).filter((r: any) => r.published !== false);
   if (!cache.has(name)) {
     cache.set(name, (async () => {
-      if (source === 'snapshot') return (snapshot as T[]).filter((r: any) => r.published !== false);
-      const res = await fetch(`${URL_}/rest/v1/${name}?select=*&published=is.true&order=${order}`, {
-        headers: { apikey: KEY!, Authorization: `Bearer ${KEY}` },
-      });
-      if (!res.ok) throw new Error(`Supabase ${name}: ${res.status} ${await res.text()}`);
-      return res.json();
+      if (source === 'snapshot') return fromSnapshot();
+      try {
+        const res = await fetch(`${URL_}/rest/v1/${name}?select=*&published=is.true&order=${order}`, {
+          headers: { apikey: KEY! },
+        });
+        if (!res.ok) throw new Error(`Supabase ${name}: ${res.status} ${await res.text()}`);
+        return res.json();
+      } catch (err) {
+        if (IN_CI) throw err;
+        console.warn(`[content] ${name}: Supabase unreachable, using snapshot (${(err as Error).message})`);
+        return fromSnapshot();
+      }
     })());
   }
   return cache.get(name) as Promise<T[]>;

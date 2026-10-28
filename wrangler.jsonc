@@ -11,6 +11,11 @@
     // run the worker on every request so the preview password covers all pages and files
     "run_worker_first": true
   },
+  // public values used by the keep-alive ping (same as .env.production)
+  "vars": {
+    "PUBLIC_SUPABASE_URL": "https://tcmhtnyjwkakswsyxvnh.supabase.co",
+    "PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_2pI-DqoAK1VJqYQIKUNOAg_wiJzyT6A"
+  },
   // keep variables set in the Cloudflare dashboard (e.g. PREVIEW_PASSWORD) between deploys
   "keep_vars": true,
   // ping Supabase every 3 days so the free project never pauses

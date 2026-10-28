@@ -6,7 +6,7 @@ export default {
   async scheduled(_event, env, ctx) {
     if (!env.PUBLIC_SUPABASE_URL || !env.PUBLIC_SUPABASE_ANON_KEY) return;
     ctx.waitUntil(fetch(`${env.PUBLIC_SUPABASE_URL}/rest/v1/partners?select=name&limit=1`, {
-      headers: { apikey: env.PUBLIC_SUPABASE_ANON_KEY, Authorization: `Bearer ${env.PUBLIC_SUPABASE_ANON_KEY}` },
+      headers: { apikey: env.PUBLIC_SUPABASE_ANON_KEY },
     }));
   },
 

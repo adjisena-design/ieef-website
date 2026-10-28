@@ -3,6 +3,7 @@ dist/
 .astro/
 .env
 .env.*
+!.env.production
 !.env.example
 .DS_Store
 .wrangler/
