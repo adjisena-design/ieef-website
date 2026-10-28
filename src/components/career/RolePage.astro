@@ -46,12 +46,12 @@ const poster = media(role.poster);
         )}
       </div>
       {poster && (
-        <aside class="poster">
+        <div class="poster">
           <p class="eyebrow">{C.poster[lang]}</p>
           {typeof poster !== 'string'
             ? <Image src={poster} alt={`${C.poster[lang]}: ${title}`} widths={[360, 720]} sizes="(max-width: 900px) 80vw, 340px" quality={78} />
             : <img src={poster} alt={`${C.poster[lang]}: ${title}`} />}
-        </aside>
+        </div>
       )}
     </div>
   </article>
@@ -60,7 +60,7 @@ const poster = media(role.poster);
 <style>
   .top { background: linear-gradient(180deg, #dfe8ea, var(--paper)); }
   .role { padding-top: 28px; padding-bottom: 96px; }
-  .back { display: inline-flex; align-items: center; gap: 8px; font-weight: 650; font-size: .9rem; color: var(--teal); }
+  .back { display: inline-flex; align-items: center; gap: 8px; font-weight: 650; font-size: .9rem; color: var(--teal-ink); }
   .back :global(.flip) { transform: rotate(180deg); }
   .layout { display: grid; grid-template-columns: 1fr 340px; gap: 64px; margin-top: 28px; align-items: start; }
   .status { display: inline-block; padding: 4px 10px; border-radius: var(--r-pill); background: #d6eadf; color: #1d6b4f; font-size: .72rem; font-weight: 700;
@@ -71,7 +71,7 @@ const poster = media(role.poster);
   .cta { margin: 24px 0 8px; }
   .cta.end { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; margin-top: 40px; padding-top: 28px; border-top: 1px solid rgba(19, 40, 63, .12); }
   .cta.end span { color: var(--muted); font-size: .92rem; }
-  .cta.end a { color: var(--teal); font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
+  .cta.end a { color: var(--teal-ink); font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
   section { margin-top: 40px; }
   h2 { font-size: 1.3rem; margin-bottom: 16px; }
   ul { padding-left: 0; list-style: none; display: grid; gap: 12px; max-width: 720px; }

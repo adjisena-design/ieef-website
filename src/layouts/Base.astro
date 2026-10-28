@@ -4,14 +4,22 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import { getLang, alternate, t } from '../i18n/ui';
 
-interface Props { title?: string; description?: string; image?: string }
+interface Props { title?: string; description?: string; image?: string; type?: 'website' | 'article'; jsonLd?: Record<string, unknown> }
 const lang = getLang(Astro.url);
-const { title, description = t(lang, 'site.tagline'), image = '/og-default.jpg' } = Astro.props;
+const { title, description = t(lang, 'site.tagline'), image = '/og-default.jpg', type = 'website', jsonLd } = Astro.props;
 const fullTitle = title ? `${title} | IEEF` : `IEEF | ${t(lang, 'site.full')}`;
 const alt = alternate(Astro.url);
 const canonical = new URL(Astro.url.pathname, Astro.site);
 // Preview builds stay out of search engines until launch. Set PUBLIC_INDEXABLE=true on the production build.
 const indexable = import.meta.env.PUBLIC_INDEXABLE === 'true';
+const enPath = lang === 'en' ? Astro.url.pathname : alt.path;
+const org = {
+  '@context': 'https://schema.org', '@type': 'ResearchOrganization', name: 'Institute for Energy, Economics & Finance', alternateName: 'IEEF',
+  url: Astro.site?.toString(), logo: new URL('/favicon.png', Astro.site).toString(), email: 'ieef@ieef.or.id',
+  address: { '@type': 'PostalAddress', streetAddress: 'Jl. Ganesa, Lb. Siliwangi, Coblong', addressLocality: 'Bandung', addressRegion: 'Jawa Barat', addressCountry: 'ID' },
+  parentOrganization: { '@type': 'CollegeOrUniversity', name: 'School of Business and Management, Institut Teknologi Bandung' },
+  sameAs: ['https://www.instagram.com/ieefofficial', 'https://www.linkedin.com/in/ieef'],
+};
 ---
 <!doctype html>
 <html lang={lang}>
@@ -28,17 +36,21 @@ const indexable = import.meta.env.PUBLIC_INDEXABLE === 'true';
   <link rel="canonical" href={canonical} />
   <link rel="alternate" hreflang={lang} href={canonical} />
   <link rel="alternate" hreflang={alt.lang} href={new URL(alt.path, Astro.site)} />
+  <link rel="alternate" hreflang="x-default" href={new URL(enPath, Astro.site)} />
+  <link rel="sitemap" href="/sitemap.xml" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" type="image/png" href="/favicon.png" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <meta name="theme-color" content="#083868" />
-  <meta property="og:type" content="website" />
+  <meta property="og:type" content={type} />
+  <meta property="og:url" content={canonical} />
   <meta property="og:site_name" content="IEEF" />
   <meta property="og:title" content={fullTitle} />
   <meta property="og:description" content={description} />
   <meta property="og:image" content={new URL(image, Astro.site)} />
   <meta property="og:locale" content={lang === 'id' ? 'id_ID' : 'en_US'} />
   <meta name="twitter:card" content="summary_large_image" />
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd ?? org)} />
 </head>
 <body>
   <slot name="hero"><Nav /></slot>

@@ -22,7 +22,7 @@ const groups = [...years.map((y) => ({ y, items: rows.filter((r) => r.year === y
   {featured.length > 0 && (
     <section class="section feat">
       <div class="wrap">
-        <p class="eyebrow">{ui.highlighted[lang]}</p>
+        <h2 class="eyebrow">{ui.highlighted[lang]}</h2>
         <div class="fgrid">
           {featured.map((r) => (
             <a class="fcard" href={r.journal_url ?? '#'} target="_blank" rel="noopener">
@@ -132,7 +132,7 @@ const groups = [...years.map((y) => ({ y, items: rows.filter((r) => r.year === y
   .search { flex: 1 1 320px; display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 18px; border-radius: var(--r-pill);
     background: #fff; border: 1px solid rgba(19, 40, 63, .14); color: var(--muted); }
   .search input { flex: 1; border: 0; outline: 0; font: inherit; color: var(--ink); background: transparent; }
-  .search:focus-within { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(24, 144, 128, .15); }
+  .search:focus-within { border-color: var(--teal-ink); box-shadow: 0 0 0 3px rgba(24, 144, 128, .15); }
   .sel select { height: 52px; padding: 0 40px 0 18px; border-radius: var(--r-pill); border: 1px solid rgba(19, 40, 63, .14); background: #fff;
     font: inherit; color: var(--navy); font-weight: 600; appearance: none; cursor: pointer;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23083868' stroke-width='2.2'><path d='M6 9l6 6 6-6'/></svg>");
@@ -144,11 +144,11 @@ const groups = [...years.map((y) => ({ y, items: rows.filter((r) => r.year === y
   .count { margin: 22px 0 8px; color: var(--muted); font-size: .88rem; }
   .group { margin-top: 26px; }
   .group[hidden], li[hidden] { display: none; }
-  .gy { font-size: 1.05rem; color: var(--warm); letter-spacing: .02em; padding-bottom: 10px; border-bottom: 2px solid var(--line); }
+  .gy { font-size: 1.05rem; color: var(--warm-ink); letter-spacing: .02em; padding-bottom: 10px; border-bottom: 2px solid var(--line); }
   ul { list-style: none; }
   li { position: relative; border-bottom: 1px solid var(--line); }
   li a { display: block; padding: 18px 48px 18px 0; }
-  li a:hover .tt { color: var(--teal); }
+  li a:hover .tt { color: var(--teal-ink); }
   .tt { display: block; color: var(--navy); font-weight: 600; font-size: 1rem; line-height: 1.45; transition: color .15s; }
   .mt { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
   .tag { font-size: .72rem; font-weight: 600; padding: 3px 10px; border-radius: var(--r-pill); background: var(--sage); color: #2c5a4f; }

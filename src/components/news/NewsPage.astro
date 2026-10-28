@@ -16,6 +16,7 @@ const years = [...new Set(items.map((n) => n.date.slice(0, 4)))];
   <PageHero slot="hero" compact eyebrow="IEEF" title={N.title[lang]} lede={N.lede[lang]} />
   <section class="section list">
     <div class="wrap">
+      <h2 class="sr-only">{N.title[lang]}</h2>
       {first && <div class="lead"><NewsCard item={first} lang={lang} featured eager /></div>}
       {years.length > 1 && (
         <div class="bar" role="toolbar" aria-label={N.year[lang]}>

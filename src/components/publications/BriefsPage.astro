@@ -25,6 +25,7 @@ const themes = (Object.keys(THEMES) as Theme[]).filter((th) => briefs.some((b) =
           </button>
         ))}
       </div>
+      <h2 class="sr-only">{ui.briefsTitle[lang]}</h2>
       <div class="grid">{items.map(({ b, v }, i) => <BriefCard pub={b} variant={v} lang={lang} eager={i < 3} />)}</div>
     </div>
   </section>

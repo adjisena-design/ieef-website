@@ -44,7 +44,7 @@ const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', qualit
 
 ---
 <Base>
-  <header slot="hero" class="hero">
+  <div slot="hero" class="hero">
     <picture class="hero-art">
       <source media="(max-width: 640px)" type="image/webp" srcset={mobWebp} sizes="100vw" />
       <source type="image/webp" srcset={heroWebp} sizes="100vw" />
@@ -54,16 +54,16 @@ const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', qualit
     <video class="hero-video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"
       data-desktop="/media/hero-desktop.mp4" data-mobile="/media/hero-mobile.mp4"></video>
     <Nav />
-    <div class="wrap hero-text">
+    <section class="wrap hero-text" aria-labelledby="page-title">
       <p class="eyebrow line">{H.hero.eyebrow[lang]}</p>
-      <h1 set:html={H.hero.title[lang]} />
+      <h1 id="page-title" set:html={H.hero.title[lang]} />
       <p class="sub">{H.hero.sub[lang]}</p>
       <div class="ctas">
         <Button href={href(lang, '/publication')} icon="arrow">{t(lang, 'cta.exploreResearch')}</Button>
         <Button href={href(lang, '/dashboard')} variant="glass">{t(lang, 'cta.openDashboards')}</Button>
       </div>
-    </div>
-    <div class="wrap lake">
+    </section>
+    <section class="wrap lake" aria-label={lang === 'id' ? 'Sorotan' : 'Highlights'}>
       <div class="lake-panel glass-dark">
         <a class="latest" href={newsHref(latest.slug)}>
           <span class="k">{latest.featured ? (lang === 'id' ? 'Sorotan' : 'Headline') : (lang === 'id' ? 'Terbaru' : 'Latest')} · {formatDate(latest.date, lang)}</span>
@@ -71,13 +71,13 @@ const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', qualit
         </a>
         {stats.map((s) => <div class="stat"><b>{s.value}</b><span>{s.label[lang]}</span></div>)}
       </div>
-    </div>
-  </header>
+    </section>
+  </div>
 
   <section class="section">
     <div class="wrap">
       <div class="about">
-        <div class="frame" style={`background-image:url(${frameArt.src})`} role="img" aria-label="">
+        <div class="frame" style={`background-image:url(${frameArt.src})`} aria-hidden="true">
           <span class="chip glass">{H.about.chip[lang]}</span>
         </div>
         <div>
@@ -224,7 +224,7 @@ const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', qualit
   .frame { position: relative; height: 440px; border-radius: 200px 200px 28px 28px; background-size: 240% auto; background-position: 78% 55%; box-shadow: 0 30px 60px -30px rgba(10, 40, 40, .5); }
   .chip { position: absolute; left: 24px; bottom: 24px; border-radius: 18px; padding: 12px 16px; font-size: .8rem; font-weight: 650; color: var(--navy); }
   .services { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-  .svc .ico { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: #e3efe6; color: var(--teal); margin-bottom: 22px; }
+  .svc .ico { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: #e3efe6; color: var(--teal-ink); margin-bottom: 22px; }
   .svc p { color: var(--muted); font-size: .9rem; margin-top: 10px; }
 
   /* dashboards */
@@ -246,7 +246,7 @@ const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', qualit
   .pubs { display: grid; grid-template-columns: 1.25fr 1fr; gap: 20px; }
   .lead { display: flex; flex-direction: column; justify-content: flex-end; min-height: 520px; color: #fff; padding: 34px;
     background: linear-gradient(180deg, rgba(8, 40, 90, 0), rgba(8, 40, 90, .25) 30%, rgba(8, 40, 90, .92) 62%), var(--art) 30% 40% / cover; }
-  .lead .k, .brief .k, .rlist .k { font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); }
+  .lead .k, .brief .k, .rlist .k { font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--teal-ink); }
   .lead .k { color: var(--warm-soft); }
   .lead h3 { color: #fff; font-size: 1.85rem; line-height: 1.2; letter-spacing: -.02em; margin: 14px 0; }
   .lead p { color: rgba(255, 255, 255, .85); max-width: 460px; }
@@ -257,9 +257,9 @@ const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', qualit
   .rlist ul { list-style: none; margin-top: 6px; }
   .rlist li { display: flex; gap: 16px; padding: 14px 0; border-top: 1px dashed rgba(19, 40, 63, .18); font-size: .94rem; font-weight: 550; color: var(--navy); }
   .rlist li:first-child { border: 0; }
-  .rlist b { min-width: 42px; color: var(--warm); font-size: .82rem; padding-top: 2px; }
+  .rlist b { min-width: 42px; color: var(--warm-ink); font-size: .82rem; padding-top: 2px; }
   .news { display: flex; gap: 28px; align-items: center; margin-top: 20px; padding: 22px 28px; border-radius: 22px; background: var(--sage); }
-  .news time { font-size: .82rem; font-weight: 700; color: var(--teal); white-space: nowrap; }
+  .news time { font-size: .82rem; font-weight: 700; color: var(--teal-ink); white-space: nowrap; }
   .nt { display: grid; gap: 2px; }
   .nt strong { color: var(--navy); font-size: 1.05rem; }
   .nt span { color: var(--muted); font-size: .88rem; }

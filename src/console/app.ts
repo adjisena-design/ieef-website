@@ -142,7 +142,7 @@ function renderLogin(message?: string) {
     h('p', { class: 'muted' }, 'Enter the access code you received from an IEEF admin.'),
     h('label', { for: 'code' }, 'Access code'), input, btn, msg,
     h('p', { class: 'small muted' }, 'Lost your code? Ask an admin to issue a new one. Codes sign you in for 12 hours on this browser.'));
-  root.append(h('div', { class: 'login-wrap' }, form));
+  root.append(h('main', { class: 'login-wrap' }, form));
   input.focus();
 }
 
@@ -222,7 +222,7 @@ async function renderOverview(main: HTMLElement) {
     h('h2', {}, 'How it works'),
     h('ol', {},
       h('li', {}, 'Edit or add items in the sections on the left. Saving stores them in the database straight away.'),
-      h('li', {}, can.edit() ? 'Press Publish when you are done. The website rebuilds with all saved changes and is live in about 10 minutes.' : 'Your drafts go to an editor for review. Once approved and published, they appear on the website.'),
+      h('li', {}, can.edit() ? 'Press Publish when you are done. The website rebuilds with all saved changes and is usually live within 2–3 minutes.' : 'Your drafts go to an editor for review. Once approved and published, they appear on the website.'),
       h('li', {}, 'Turn off "Show on website" to hide an item without deleting it.'))));
   pollTimer = window.setInterval(async () => {
     if (current !== 'overview') return;
@@ -232,7 +232,7 @@ async function renderOverview(main: HTMLElement) {
 
 function renderPublish(box: HTMLElement, s: any) {
   clear(box);
-  const BUILD_MIN = 10;
+  const BUILD_MIN = 3;
   const since = s.last_at ? (Date.now() - new Date(s.last_at).getTime()) / 60000 : Infinity;
   const cancelled = !!s.cancelled_at;
   const building = since < BUILD_MIN + 2 && !cancelled;
@@ -253,11 +253,11 @@ function renderPublish(box: HTMLElement, s: any) {
   const btn = h('button', { type: 'button', class: 'btn primary', disabled: !s.configured || (building && since < 2) }, building ? 'Publish again' : 'Publish now');
   btn.addEventListener('click', async () => {
     const ok = await confirmBox('Publish to the website?',
-      `The website rebuilds with everything saved in the console${s.pending_changes ? ` (${s.pending_changes} change${s.pending_changes === 1 ? '' : 's'} not yet live)` : ''}. It takes about 10 minutes, and you can abort it while it runs.`,
+      `The website rebuilds with everything saved in the console${s.pending_changes ? ` (${s.pending_changes} change${s.pending_changes === 1 ? '' : 's'} not yet live)` : ''}. It usually takes 2–3 minutes, and you can abort it while it runs.`,
       'Publish', 'primary');
     if (!ok) return;
     btn.disabled = true; btn.textContent = 'Starting...';
-    try { await rpc('console_publish'); toast('Rebuild started. The website updates in about 10 minutes.'); renderPublish(box, await rpc('console_publish_status')); }
+    try { await rpc('console_publish'); toast('Rebuild started. The website updates in about 2–3 minutes.'); renderPublish(box, await rpc('console_publish_status')); }
     catch (e: any) { toast(e.message, 'err'); btn.disabled = false; btn.textContent = 'Publish now'; }
   });
   const acts = h('div', { class: 'pub-actions' }, btn);

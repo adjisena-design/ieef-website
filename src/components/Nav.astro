@@ -80,14 +80,14 @@ const isActive = (p: string) => (p === '/' ? here === '/' : here.startsWith(p) |
   .lang { display: flex; padding: 3px; border-radius: var(--r-pill); background: rgba(8, 56, 104, .08); font-size: .75rem; font-weight: 700; }
   .lang span { padding: 6px 11px; border-radius: var(--r-pill); color: var(--navy); }
   .lang span.on { background: var(--navy); color: #fff; }
-  .cta { display: inline-flex; align-items: center; height: 44px; padding: 0 22px; border-radius: var(--r-pill); background: var(--warm); color: #fff; font-weight: 650; font-size: .94rem; }
+  .cta { display: inline-flex; align-items: center; height: 44px; padding: 0 22px; border-radius: var(--r-pill); background: var(--warm); color: var(--navy-deep); font-weight: 700; font-size: .94rem; }
   .burger { display: none; width: 42px; height: 42px; border-radius: 12px; place-items: center; background: rgba(251, 248, 240, .7); color: var(--navy); }
   .drawer { position: absolute; left: var(--gutter); right: var(--gutter); top: calc(100% + 10px); border-radius: var(--r-md); padding: 10px; background: rgba(251, 248, 240, .92); }
   .drawer ul { list-style: none; }
   .drawer a { display: block; padding: 12px 14px; border-radius: 12px; font-weight: 600; color: var(--navy); }
   .drawer .on a { background: rgba(8, 56, 104, .07); }
   .drawer .child a { padding-left: 30px; font-weight: 500; }
-  .drawer .drawer-cta { margin-top: 6px; background: var(--warm); color: #fff; text-align: center; border-radius: var(--r-pill); }
+  .drawer .drawer-cta { margin-top: 6px; background: var(--warm); color: var(--navy-deep); text-align: center; border-radius: var(--r-pill); }
 
   @media (max-width: 1080px) {
     .links, .cta { display: none; }

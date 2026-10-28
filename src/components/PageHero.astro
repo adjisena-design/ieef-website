@@ -12,18 +12,18 @@ const widths = [960, 1600, 2400];
 const imgs = await Promise.all(widths.map((w) => getImage({ src, width: w, format: 'webp', quality: 68 })));
 const srcset = imgs.map((im, i) => `${im.src} ${widths[i]}w`).join(', ');
 ---
-<header class:list={['page-hero', art, { compact }]}>
+<div class:list={['page-hero', art, { compact }]}>
   <img class="art" src={imgs[1].src} srcset={srcset} sizes="100vw" alt="" fetchpriority="high" decoding="async" />
   <Nav />
-  <div class="wrap">
+  <section class="wrap" aria-labelledby="page-title">
     <div class="box">
       {eyebrow && <p class="eyebrow line">{eyebrow}</p>}
-      <h1 set:html={title} />
+      <h1 id="page-title" set:html={title} />
       {lede && <p class="lede">{lede}</p>}
       <slot />
     </div>
-  </div>
-</header>
+  </section>
+</div>
 
 <style>
   .page-hero { position: relative; isolation: isolate; padding-bottom: 96px; min-height: 560px; }

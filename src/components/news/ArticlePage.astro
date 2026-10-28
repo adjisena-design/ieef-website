@@ -34,9 +34,16 @@ const blocks: Block[] = paragraphs(pick(item, 'body', lang)).map((p) => {
 const pageUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const shareText = encodeURIComponent(title);
 const description = (pick(item, 'summary', lang) ?? paragraphs(item.body_en)[0] ?? '').slice(0, 155);
-const ogImage = img && typeof img !== 'string' ? img.src : undefined;
+const ogImage = img && typeof img !== 'string' ? img.src : typeof img === 'string' ? img : undefined;
+const jsonLd = {
+  '@context': 'https://schema.org', '@type': 'NewsArticle', headline: title.slice(0, 110), description,
+  datePublished: item.date, inLanguage: englishOnly ? 'en' : lang, mainEntityOfPage: pageUrl,
+  image: ogImage ? [new URL(ogImage, Astro.site).toString()] : undefined,
+  author: { '@type': 'Organization', name: 'Institute for Energy, Economics & Finance', url: Astro.site?.toString() },
+  publisher: { '@type': 'Organization', name: 'IEEF', logo: { '@type': 'ImageObject', url: new URL('/favicon.png', Astro.site).toString() } },
+};
 ---
-<Base title={title} description={description} image={ogImage}>
+<Base title={title} description={description} image={ogImage} type="article" jsonLd={jsonLd}>
   <div slot="hero" class="top"><Nav /></div>
   <article class="wrap article">
     <a class="back" href={href(lang, '/news-and-article')}><Icon name="arrow" size={16} class="flip" /> {N.back[lang]}</a>
@@ -85,10 +92,10 @@ const ogImage = img && typeof img !== 'string' ? img.src : undefined;
 <style>
   .top { background: linear-gradient(180deg, #dfe8ea, var(--paper)); }
   .article { max-width: 1100px; padding-top: 28px; }
-  .back { display: inline-flex; align-items: center; gap: 8px; font-weight: 650; font-size: .9rem; color: var(--teal); }
+  .back { display: inline-flex; align-items: center; gap: 8px; font-weight: 650; font-size: .9rem; color: var(--teal-ink); }
   .back :global(.flip) { transform: rotate(180deg); }
   .head { max-width: 820px; margin: 28px 0 32px; }
-  .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .84rem; font-weight: 700; color: var(--teal); }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .84rem; font-weight: 700; color: var(--teal-ink); }
   .meta span { color: var(--muted); font-weight: 600; }
   .meta span::before { content: '·'; margin-right: 14px; }
   h1 { margin-top: 14px; font-size: clamp(1.8rem, 1.2rem + 1.8vw, 2.6rem); line-height: 1.15; letter-spacing: -.03em; }
@@ -98,7 +105,7 @@ const ogImage = img && typeof img !== 'string' ? img.src : undefined;
   .hero-img :global(img) { width: 100%; max-height: 640px; object-fit: cover; }
   .body { max-width: 720px; margin: 44px auto 0; }
   .body p { font-size: 1.06rem; line-height: 1.8; color: #22344a; margin-bottom: 1.3em; }
-  .body p :global(a), .source a { color: var(--teal); text-decoration: underline; text-underline-offset: 3px; word-break: break-word; }
+  .body p :global(a), .source a { color: var(--teal-ink); text-decoration: underline; text-underline-offset: 3px; word-break: break-word; }
   .body p.source { font-size: .9rem; color: var(--muted); }
   .video { display: inline-flex; align-items: center; gap: 12px; margin: 4px 0 26px; padding: 12px 18px 12px 12px; border-radius: var(--r-pill);
     background: var(--navy); color: #fff; font-weight: 650; font-size: .92rem; }
@@ -108,7 +115,7 @@ const ogImage = img && typeof img !== 'string' ? img.src : undefined;
   .share span { font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
   .share a, .share button { height: 38px; padding: 0 16px; display: inline-flex; align-items: center; border-radius: var(--r-pill);
     border: 1px solid rgba(19, 40, 63, .16); background: var(--paper-card); font-size: .86rem; font-weight: 600; color: var(--navy); }
-  .share a:hover, .share button:hover { border-color: var(--teal); color: var(--teal); }
+  .share a:hover, .share button:hover { border-color: var(--teal-ink); color: var(--teal-ink); }
   .more { background: var(--paper-deep, #ece5d5); margin-top: 72px; }
   .more h2 { margin-bottom: 28px; }
   .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }

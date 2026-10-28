@@ -1,4 +1,5 @@
 // Cloudflare Worker in front of the static site (dist/).
+import { REDIRECTS } from './redirects.js';
 // Team preview: if the PREVIEW_PASSWORD variable is set in Cloudflare, visitors must enter it.
 // At public launch, delete PREVIEW_PASSWORD in Cloudflare (Settings -> Variables and Secrets).
 export default {
@@ -18,6 +19,12 @@ export default {
         headers: { 'WWW-Authenticate': 'Basic realm="IEEF preview", charset="UTF-8"', 'Cache-Control': 'no-store' },
       });
     }
+    // permanent redirects from the old site's addresses (also /id/ versions), ignoring case and trailing slash
+    const url = new URL(request.url);
+    const isId = url.pathname === '/id' || url.pathname.startsWith('/id/');
+    const bare = (isId ? url.pathname.slice(3) : url.pathname).toLowerCase().replace(/\/+$/, '') || '/';
+    const target = REDIRECTS[bare];
+    if (target) return Response.redirect(new URL((isId ? '/id' : '') + target, url.origin).toString(), 301);
     return env.ASSETS.fetch(request);
   },
 };

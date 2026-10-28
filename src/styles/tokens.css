@@ -6,6 +6,8 @@
   --navy-2: #104070;
   --navy-deep: #0a2c4f;
   --teal: #189080;
+  --teal-ink: #0f7466;   /* teal for text on light backgrounds (WCAG AA) */
+  --warm-ink: #a35215;   /* orange for small text on light backgrounds (WCAG AA) */
   --mint: #78c0b8;
   --sky: #5898c0;
 

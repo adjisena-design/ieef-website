@@ -38,7 +38,7 @@ const SUPA_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? '';
           <p>{C.thanks[lang]}</p>
         </div>
       </form>
-      <aside class="info">
+      <div class="info">
         <div class="card glass-dark reach">
           <p class="eyebrow">{C.reach[lang]}</p>
           <a class="line" href="mailto:ieef@ieef.or.id"><Icon name="mail" /> ieef@ieef.or.id</a>
@@ -50,7 +50,7 @@ const SUPA_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? '';
             <a href="https://www.linkedin.com/in/ieef" target="_blank" rel="noopener">LinkedIn</a>
           </div>
         </div>
-      </aside>
+      </div>
     </div>
   </section>
 </Base>
@@ -99,7 +99,7 @@ const SUPA_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? '';
   input, select, textarea { font: inherit; font-size: .96rem; color: var(--ink); width: 100%; padding: 13px 15px; border-radius: 12px;
     border: 1px solid rgba(19, 40, 63, .18); background: #fff; transition: border-color .2s, box-shadow .2s; }
   textarea { resize: vertical; min-height: 150px; }
-  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 4px rgba(24, 144, 128, .15); }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--teal-ink); box-shadow: 0 0 0 4px rgba(24, 144, 128, .15); }
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
   .foot { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 22px; margin-top: 4px; }
   .btn-send { display: inline-flex; align-items: center; gap: 10px; height: 52px; padding: 0 26px; border-radius: var(--r-pill);
