@@ -1,6 +1,5 @@
 ---
-import { Image } from 'astro:assets';
-import logoWhite from '../assets/brand/logo_white.png';
+import logoWhite from '../assets/brand/logo-white.svg';
 import { t, href, getLang, DASHBOARDS } from '../i18n/ui';
 const lang = getLang(Astro.url);
 const year = new Date().getFullYear();
@@ -9,7 +8,7 @@ const year = new Date().getFullYear();
   <div class="wrap">
     <div class="cols">
       <div class="brand">
-        <Image src={logoWhite} alt="IEEF" height={46} />
+        <img src={logoWhite.src} width={Math.round((logoWhite.width / logoWhite.height) * 46)} height="46" alt="IEEF" loading="lazy" />
         <p>{t(lang, 'site.tagline')}</p>
       </div>
       <div>

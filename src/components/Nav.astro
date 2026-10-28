@@ -1,6 +1,5 @@
 ---
-import { Image } from 'astro:assets';
-import logo from '../assets/brand/logo.png';
+import logo from '../assets/brand/logo.svg';
 import Icon from './Icon.astro';
 import { NAV, t, href, getLang, alternate, languages } from '../i18n/ui';
 
@@ -13,7 +12,7 @@ const isActive = (p: string) => (p === '/' ? here === '/' : here.startsWith(p));
 <header class="navbar wrap">
   <nav class="bar glass" aria-label="Main">
     <a class="logo" href={href(lang, '/')} aria-label="IEEF home">
-      <Image src={logo} alt="IEEF — Institute for Energy, Economics & Finance" height={40} loading="eager" />
+      <img src={logo.src} width={Math.round((logo.width / logo.height) * 40)} height="40" alt="IEEF — Institute for Energy, Economics & Finance" />
     </a>
 
     <ul class="links">
