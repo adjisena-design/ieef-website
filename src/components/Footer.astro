@@ -1,0 +1,61 @@
+---
+import { Image } from 'astro:assets';
+import logoWhite from '../assets/brand/logo_white.png';
+import { t, href, getLang, DASHBOARDS } from '../i18n/ui';
+const lang = getLang(Astro.url);
+const year = new Date().getFullYear();
+---
+<footer class="foot">
+  <div class="wrap">
+    <div class="cols">
+      <div class="brand">
+        <Image src={logoWhite} alt="IEEF" height={46} />
+        <p>{t(lang, 'site.tagline')}</p>
+      </div>
+      <div>
+        <h2>{t(lang, 'footer.explore')}</h2>
+        <ul>
+          <li><a href={href(lang, '/about-us')}>{t(lang, 'nav.about')}</a></li>
+          <li><a href={href(lang, '/policy-brief')}>{t(lang, 'nav.policyBrief')}</a></li>
+          <li><a href={href(lang, '/research-publication')}>{t(lang, 'nav.research')}</a></li>
+          <li><a href={href(lang, '/news-and-article')}>{t(lang, 'nav.news')}</a></li>
+          <li><a href={href(lang, '/career')}>{t(lang, 'nav.career')}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>{t(lang, 'footer.dashboards')}</h2>
+        <ul>{DASHBOARDS.map((d) => <li><a href={d.url} target="_blank" rel="noopener">{d.title[lang]}</a></li>)}</ul>
+      </div>
+      <div>
+        <h2>{t(lang, 'footer.contact')}</h2>
+        <ul>
+          <li><a href="mailto:ieef@ieef.or.id">ieef@ieef.or.id</a></li>
+          <li>{t(lang, 'footer.address')}</li>
+          <li class="social">
+            <a href="https://www.instagram.com/ieefofficial" target="_blank" rel="noopener">Instagram</a>
+            <a href="https://www.linkedin.com/in/ieef" target="_blank" rel="noopener">LinkedIn</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="base"><span>© {year} IEEF. {t(lang, 'footer.rights')}</span><span>{t(lang, 'site.full')}</span></div>
+  </div>
+</footer>
+
+<style>
+  .foot { background: var(--navy-deep); color: #d7e2ea; padding: 70px 0 34px; }
+  .cols { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 40px; }
+  .brand :global(img) { height: 46px; width: auto; }
+  .brand p { color: #9fb3c4; margin-top: 16px; max-width: 280px; font-size: .875rem; }
+  h2 { font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--mint); margin-bottom: 16px; font-weight: 700; }
+  ul { list-style: none; }
+  li { font-size: .875rem; margin-bottom: 10px; }
+  a:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+  .social { display: flex; gap: 16px; }
+  .base { display: flex; justify-content: space-between; gap: 16px; margin-top: 60px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, .12); font-size: .8rem; color: #8aa0b3; }
+  @media (max-width: 860px) {
+    .cols { grid-template-columns: 1fr 1fr; gap: 28px; }
+    .brand { grid-column: 1 / -1; }
+    .base { flex-direction: column; gap: 6px; }
+  }
+</style>

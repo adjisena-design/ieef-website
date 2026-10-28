@@ -1,0 +1,259 @@
+---
+import { getImage } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Nav from '../Nav.astro';
+import Button from '../Button.astro';
+import Icon from '../Icon.astro';
+import Sparkline from '../Sparkline.astro';
+import heroArt from '../../assets/art/paint_hero.jpg';
+import heroArtMobile from '../../assets/art/paint_mobile.jpg';
+import duskArt from '../../assets/art/paint_dusk.jpg';
+import { t, href, getLang, DASHBOARDS } from '../../i18n/ui';
+import * as H from '../../data/home';
+
+const lang = getLang(Astro.url);
+
+// Responsive WebP art generated at build time (AVIF tested larger on the grainy painted texture).
+const sizes = async (src: ImageMetadata, widths: number[], format: 'webp') =>
+  (await Promise.all(widths.map((w) => getImage({ src, width: w, format, quality: 70 }))))
+    .map((img, i) => `${img.src} ${widths[i]}w`).join(', ');
+const heroWebp = await sizes(heroArt, [960, 1600, 2400], 'webp');
+const mobWebp = await sizes(heroArtMobile, [450, 900], 'webp');
+const heroFallback = await getImage({ src: heroArt, width: 1600, format: 'jpg', quality: 72 });
+const frameArt = await getImage({ src: heroArt, width: 1400, format: 'webp', quality: 70 });
+const dusk = await getImage({ src: duskArt, width: 2000, format: 'webp', quality: 68 });
+const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', quality: 66 });
+
+const fmtDate = (d: string) => new Date(d).toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+---
+<Base>
+  <header slot="hero" class="hero">
+    <picture class="hero-art">
+      <source media="(max-width: 640px)" type="image/webp" srcset={mobWebp} sizes="100vw" />
+      <source type="image/webp" srcset={heroWebp} sizes="100vw" />
+      <img src={heroFallback.src} alt="" fetchpriority="high" decoding="async" />
+    </picture>
+    <Nav />
+    <div class="wrap hero-text">
+      <p class="eyebrow line">{H.hero.eyebrow[lang]}</p>
+      <h1 set:html={H.hero.title[lang]} />
+      <p class="sub">{H.hero.sub[lang]}</p>
+      <div class="ctas">
+        <Button href={href(lang, '/publication')} icon="arrow">{t(lang, 'cta.exploreResearch')}</Button>
+        <Button href={href(lang, '/dashboard')} variant="glass">{t(lang, 'cta.openDashboards')}</Button>
+      </div>
+    </div>
+    <div class="wrap lake">
+      <div class="lake-panel glass-dark">
+        <a class="latest" href={href(lang, H.news.href)}>
+          <span class="k">{lang === 'id' ? 'Terbaru' : 'Latest'} · Kompas Bisnis</span>
+          <span class="t">{H.news.summary[lang]}</span>
+        </a>
+        {H.stats.map((s) => <div class="stat"><b>{s.value}</b><span>{s.label[lang]}</span></div>)}
+      </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="about">
+        <div class="frame" style={`background-image:url(${frameArt.src})`} role="img" aria-label="">
+          <span class="chip glass">{H.about.chip[lang]}</span>
+        </div>
+        <div>
+          <p class="eyebrow">{H.about.eyebrow[lang]}</p>
+          <h2>{H.about.title[lang]}</h2>
+          <p class="lede">{H.about.body[lang]}</p>
+          <div class="ctas"><Button href={href(lang, '/about-us')} variant="ghost" icon="arrow">{t(lang, 'cta.aboutIeef')}</Button></div>
+        </div>
+      </div>
+      <div class="services">
+        {H.services.map((s) => (
+          <article class="card card-paper svc">
+            <span class="ico"><Icon name={s.icon} size={24} /></span>
+            <h3>{s.title[lang]}</h3>
+            <p>{s.body[lang]}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section dusk" style={`background-image:url(${dusk.src})`}>
+    <div class="wrap">
+      <div class="dusk-title glass-dark">
+        <p class="eyebrow">{H.dashboardsSection.eyebrow[lang]}</p>
+        <h2>{H.dashboardsSection.title[lang]}</h2>
+        <p>{H.dashboardsSection.body[lang]}</p>
+      </div>
+      <div class="dash-grid">
+        {DASHBOARDS.map((d, i) => (
+          <a class="card glass-dark dash" href={d.url} target="_blank" rel="noopener">
+            <span class="tag">{d.tag[lang]}</span>
+            <h3>{d.title[lang]}</h3>
+            <Sparkline values={H.sparks[i]} stroke="#ffd6a8" fill="rgba(255,214,168,.16)" />
+            <span class="go">{t(lang, 'cta.openDashboard')} <Icon name="external" size={16} /></span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="head">
+        <div><p class="eyebrow">{H.pubsSection.eyebrow[lang]}</p><h2>{H.pubsSection.title[lang]}</h2></div>
+        <Button href={href(lang, '/publication')} variant="ghost" icon="arrow">{t(lang, 'cta.viewAllPubs')}</Button>
+      </div>
+      <div class="pubs">
+        <a class="card lead" href={href(lang, H.featuredBrief.href)} style={`--art:url(${dusk.src})`}>
+          <span class="k">{H.pubsSection.featuredLabel[lang]}</span>
+          <h3>{H.featuredBrief.title}</h3>
+          <p>{H.featuredBrief.summary[lang]}</p>
+          <span class="meta"><Icon name="doc" size={18} /> {t(lang, 'cta.readBrief')}</span>
+        </a>
+        <div class="side">
+          <div class="two">
+            {H.briefs.map((b) => (
+              <a class="card card-paper brief" href={href(lang, '/policy-brief')}><span class="k">Policy brief</span><h3>{b}</h3></a>
+            ))}
+          </div>
+          <div class="card card-paper rlist">
+            <span class="k">{H.pubsSection.researchLabel[lang]}</span>
+            <ul>{H.research.map((r) => <li><b>{r.year}</b><span>{r.title}</span></li>)}</ul>
+          </div>
+        </div>
+      </div>
+      <a class="news" href={href(lang, H.news.href)}>
+        <time datetime={H.news.date}>{fmtDate(H.news.date)}</time>
+        <span class="nt"><strong>{H.news.title[lang]}</strong><span>{H.news.summary[lang]}</span></span>
+        <span class="nb">{t(lang, 'cta.readArticle')}</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section partners-sec">
+    <div class="wrap">
+      <p class="eyebrow center">{H.partnersTitle[lang]}</p>
+      <ul class="partners">{H.partners.map((p) => <li>{p}</li>)}</ul>
+    </div>
+  </section>
+
+  <div class="strip" style={`background-image:url(${strip.src})`} aria-hidden="true"></div>
+</Base>
+
+<style>
+  /* hero */
+  .hero { position: relative; min-height: 940px; padding-bottom: 200px; color: var(--navy); isolation: isolate; }
+  .hero-art { position: absolute; inset: 0; z-index: -2; }
+  .hero-art img { width: 100%; height: 100%; object-fit: cover; object-position: center bottom; }
+  .hero::after { content: ''; position: absolute; inset: 0; z-index: -1;
+    background: radial-gradient(ellipse 55% 70% at 18% 38%, rgba(232, 237, 238, .62), rgba(232, 237, 238, 0) 70%),
+                linear-gradient(90deg, rgba(226, 233, 236, .35), rgba(226, 233, 236, 0) 50%),
+                linear-gradient(180deg, rgba(236, 240, 238, .25), rgba(236, 240, 238, 0) 30%, rgba(5, 25, 50, 0) 65%, rgba(5, 25, 50, .35)); }
+  .hero-text { padding-top: 56px; }
+  .hero-text > * { max-width: 660px; }
+  .eyebrow.line { display: flex; align-items: center; gap: 12px; }
+  .eyebrow.line::before { content: ''; width: 34px; height: 2px; background: var(--teal); flex: none; }
+  .hero h1 { margin: 18px 0; font-size: clamp(2.5rem, 1.5rem + 2.8vw, 3.35rem); max-width: 720px; }
+  .sub { font-size: 1.12rem; color: #1f3a55; max-width: 500px; }
+  .ctas { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+  .lake { position: absolute; left: 0; right: 0; bottom: 36px; display: flex; justify-content: flex-end; }
+  .lake-panel { width: min(880px, 100%); display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; align-items: center; border-radius: var(--r-lg); padding: 24px 30px; }
+  .lake-panel > * { padding: 0 24px; border-left: 1px solid rgba(255, 255, 255, .22); }
+  .lake-panel > :first-child { border: 0; padding-left: 0; }
+  .latest { display: grid; gap: 6px; }
+  .latest .k { font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--warm-soft); }
+  .latest .t { font-size: .97rem; font-weight: 650; line-height: 1.35; }
+  .stat b { display: block; font-size: 2.25rem; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+  .stat span { font-size: .8rem; opacity: .85; }
+
+  /* about */
+  .about { display: grid; grid-template-columns: .9fr 1.1fr; gap: 60px; align-items: center; margin-bottom: 56px; }
+  .about h2 { margin: 12px 0 20px; }
+  .frame { position: relative; height: 440px; border-radius: 200px 200px 28px 28px; background-size: 240% auto; background-position: 78% 55%; box-shadow: 0 30px 60px -30px rgba(10, 40, 40, .5); }
+  .chip { position: absolute; left: 24px; bottom: 24px; border-radius: 18px; padding: 12px 16px; font-size: .8rem; font-weight: 650; color: var(--navy); }
+  .services { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .svc .ico { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: #e3efe6; color: var(--teal); margin-bottom: 22px; }
+  .svc p { color: var(--muted); font-size: .9rem; margin-top: 10px; }
+
+  /* dashboards */
+  .dusk { position: relative; background-size: cover; background-position: center 30%; color: #fff; }
+  .dusk-title { display: inline-block; max-width: 600px; border-radius: var(--r-lg); padding: 26px 30px; margin-bottom: 28px; }
+  .dusk-title .eyebrow { color: var(--warm-soft); }
+  .dusk-title h2 { color: #fff; margin: 10px 0; }
+  .dusk-title p { color: rgba(255, 255, 255, .88); }
+  .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .dash { display: flex; flex-direction: column; transition: transform .15s ease; }
+  .dash:hover { transform: translateY(-3px); }
+  .dash .tag { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--warm-soft); }
+  .dash h3 { color: #fff; margin: 8px 0 18px; min-height: 48px; }
+  .dash .go { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, .18); font-size: .85rem; font-weight: 650; }
+
+  /* publications */
+  .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 40px; flex-wrap: wrap; }
+  .head h2 { margin-top: 12px; }
+  .pubs { display: grid; grid-template-columns: 1.25fr 1fr; gap: 20px; }
+  .lead { display: flex; flex-direction: column; justify-content: flex-end; min-height: 520px; color: #fff; padding: 34px;
+    background: linear-gradient(180deg, rgba(8, 40, 90, 0), rgba(8, 40, 90, .25) 30%, rgba(8, 40, 90, .92) 62%), var(--art) 30% 40% / cover; }
+  .lead .k, .brief .k, .rlist .k { font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); }
+  .lead .k { color: var(--warm-soft); }
+  .lead h3 { color: #fff; font-size: 1.85rem; line-height: 1.2; letter-spacing: -.02em; margin: 14px 0; }
+  .lead p { color: rgba(255, 255, 255, .85); max-width: 460px; }
+  .lead .meta { display: flex; gap: 10px; align-items: center; margin-top: 22px; font-weight: 650; }
+  .side { display: grid; gap: 20px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .brief h3 { margin-top: 10px; font-size: 1.1rem; }
+  .rlist ul { list-style: none; margin-top: 6px; }
+  .rlist li { display: flex; gap: 16px; padding: 14px 0; border-top: 1px dashed rgba(19, 40, 63, .18); font-size: .94rem; font-weight: 550; color: var(--navy); }
+  .rlist li:first-child { border: 0; }
+  .rlist b { min-width: 42px; color: var(--warm); font-size: .82rem; padding-top: 2px; }
+  .news { display: flex; gap: 28px; align-items: center; margin-top: 20px; padding: 22px 28px; border-radius: 22px; background: var(--sage); }
+  .news time { font-size: .82rem; font-weight: 700; color: var(--teal); white-space: nowrap; }
+  .nt { display: grid; gap: 2px; }
+  .nt strong { color: var(--navy); font-size: 1.05rem; }
+  .nt span { color: var(--muted); font-size: .88rem; }
+  .nb { margin-left: auto; background: var(--navy); color: #fff; height: 42px; padding: 0 22px; border-radius: var(--r-pill); display: inline-flex; align-items: center; font-weight: 650; font-size: .9rem; white-space: nowrap; }
+
+  /* partners */
+  .partners-sec { padding-top: 10px; }
+  .center { text-align: center; margin-bottom: 28px; }
+  .partners { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; list-style: none; }
+  .partners li { padding: 10px 18px; border-radius: var(--r-pill); border: 1px solid rgba(19, 40, 63, .18); color: #40505e; font-size: .84rem; font-weight: 600; }
+  .strip { height: 200px; background-size: cover; background-position: center 92%; }
+
+  @media (max-width: 1080px) {
+    .services, .dash-grid { grid-template-columns: 1fr 1fr; }
+    .pubs { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .hero { min-height: 0; padding-bottom: 28px; }
+    .hero::after { background: linear-gradient(180deg, rgba(232, 237, 238, .7), rgba(232, 237, 238, .35) 45%, rgba(232, 237, 238, 0) 62%, rgba(5, 25, 50, .3)); }
+    .hero-text { padding-top: 40px; }
+    .hero h1 { font-size: 2.5rem; margin: 16px 0 14px; }
+    .sub { font-size: 1rem; }
+    .ctas { flex-direction: column; }
+    .ctas :global(.btn) { width: 100%; }
+    .lake { position: static; margin-top: 220px; }
+    .lake-panel { grid-template-columns: repeat(3, 1fr); padding: 18px; row-gap: 14px; }
+    .lake-panel > * { padding: 0 10px; }
+    .lake-panel > :first-child { grid-column: 1 / -1; padding: 0 0 12px; border-bottom: 1px solid rgba(255, 255, 255, .22); }
+    .lake-panel > :nth-child(2) { border-left: 0; padding-left: 0; }
+    .stat b { font-size: 1.6rem; }
+    .stat span { font-size: .72rem; }
+    .about { grid-template-columns: 1fr; gap: 28px; margin-bottom: 28px; }
+    .frame { height: 280px; }
+    .services { gap: 12px; }
+    .svc p { display: none; }
+    .svc h3 { font-size: .95rem; }
+    .svc .ico { width: 40px; height: 40px; margin-bottom: 14px; }
+    .dash-grid, .two { grid-template-columns: 1fr; }
+    .dash h3 { min-height: 0; }
+    .dusk-title { padding: 20px; }
+    .lead { min-height: 440px; padding: 24px; }
+    .lead h3 { font-size: 1.45rem; }
+    .news { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .nb { margin-left: 0; }
+    .strip { height: 120px; }
+  }
+</style>

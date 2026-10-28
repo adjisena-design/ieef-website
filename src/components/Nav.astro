@@ -1,0 +1,101 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/brand/logo.png';
+import Icon from './Icon.astro';
+import { NAV, t, href, getLang, alternate, languages } from '../i18n/ui';
+
+const lang = getLang(Astro.url);
+const alt = alternate(Astro.url);
+const here = lang === 'id' ? Astro.url.pathname.replace(/^\/id/, '') || '/' : Astro.url.pathname;
+const isActive = (p: string) => (p === '/' ? here === '/' : here.startsWith(p));
+---
+<a class="skip" href="#main">{t(lang, 'nav.skip')}</a>
+<header class="navbar wrap">
+  <nav class="bar glass" aria-label="Main">
+    <a class="logo" href={href(lang, '/')} aria-label="IEEF home">
+      <Image src={logo} alt="IEEF — Institute for Energy, Economics & Finance" height={40} loading="eager" />
+    </a>
+
+    <ul class="links">
+      {NAV.map((item) => (
+        <li class:list={[{ on: isActive(item.path) || item.children?.some((c) => isActive(c.path)) }, { has: item.children }]}>
+          <a href={href(lang, item.path)}>{t(lang, item.key)}{item.children && <Icon name="chevron" size={14} />}</a>
+          {item.children && (
+            <ul class="sub glass">
+              {item.children.map((c) => <li><a href={href(lang, c.path)}>{t(lang, c.key)}</a></li>)}
+            </ul>
+          )}
+        </li>
+      ))}
+    </ul>
+
+    <a class="lang" href={alt.path} hreflang={alt.lang} title={t(lang, 'lang.switch')} aria-label={t(lang, 'lang.switch')}>
+      {Object.entries(languages).map(([code, label]) => <span class:list={{ on: code === lang }}>{label === 'EN' ? 'EN' : 'ID'}</span>)}
+    </a>
+    <a class="cta" href={href(lang, '/contact-us')}>{t(lang, 'nav.contact')}</a>
+
+    <button class="burger" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label={t(lang, 'nav.menu')}>
+      <Icon name="menu" size={22} />
+    </button>
+  </nav>
+
+  <div id="mobile-menu" class="drawer glass" hidden>
+    <ul>
+      {NAV.flatMap((item) => [item, ...(item.children ?? [])]).map((item) => (
+        <li class:list={{ on: isActive(item.path), child: NAV.every((n) => n.path !== item.path) }}>
+          <a href={href(lang, item.path)}>{t(lang, item.key)}</a>
+        </li>
+      ))}
+      <li><a class="drawer-cta" href={href(lang, '/contact-us')}>{t(lang, 'nav.contact')}</a></li>
+    </ul>
+  </div>
+</header>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('.burger');
+  const menu = document.getElementById('mobile-menu');
+  btn?.addEventListener('click', () => {
+    const open = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!open));
+    if (menu) menu.hidden = open;
+  });
+</script>
+
+<style>
+  .skip { position: absolute; left: -999px; top: 8px; z-index: 100; background: var(--navy); color: #fff; padding: 10px 16px; border-radius: 10px; }
+  .skip:focus { left: 16px; }
+  .navbar { position: relative; z-index: 20; padding-top: 18px; }
+  .bar { display: flex; align-items: center; gap: 26px; height: 68px; padding: 0 14px 0 22px; border-radius: var(--r-md); }
+  .logo :global(img) { height: 40px; width: auto; }
+  .links { display: flex; gap: 24px; list-style: none; margin-left: auto; font-size: .9rem; font-weight: 550; color: #1d3550; }
+  .links > li { position: relative; }
+  .links > li > a { display: inline-flex; align-items: center; gap: 4px; padding: 8px 0; }
+  .links > li.on > a { color: var(--navy); font-weight: 750; }
+  .sub { position: absolute; top: 100%; left: -16px; min-width: 220px; list-style: none; padding: 8px; border-radius: 16px;
+    opacity: 0; visibility: hidden; transform: translateY(4px); transition: .15s ease; }
+  .sub a { display: block; padding: 10px 12px; border-radius: 10px; }
+  .sub a:hover { background: rgba(8, 56, 104, .06); }
+  .has:hover .sub, .has:focus-within .sub { opacity: 1; visibility: visible; transform: none; }
+  .lang { display: flex; padding: 3px; border-radius: var(--r-pill); background: rgba(8, 56, 104, .08); font-size: .75rem; font-weight: 700; }
+  .lang span { padding: 6px 11px; border-radius: var(--r-pill); color: var(--navy); }
+  .lang span.on { background: var(--navy); color: #fff; }
+  .cta { display: inline-flex; align-items: center; height: 44px; padding: 0 22px; border-radius: var(--r-pill); background: var(--warm); color: #fff; font-weight: 650; font-size: .94rem; }
+  .burger { display: none; width: 42px; height: 42px; border-radius: 12px; place-items: center; background: rgba(251, 248, 240, .7); color: var(--navy); }
+  .drawer { position: absolute; left: var(--gutter); right: var(--gutter); top: calc(100% + 10px); border-radius: var(--r-md); padding: 10px; background: rgba(251, 248, 240, .92); }
+  .drawer ul { list-style: none; }
+  .drawer a { display: block; padding: 12px 14px; border-radius: 12px; font-weight: 600; color: var(--navy); }
+  .drawer .on a { background: rgba(8, 56, 104, .07); }
+  .drawer .child a { padding-left: 30px; font-weight: 500; }
+  .drawer .drawer-cta { margin-top: 6px; background: var(--warm); color: #fff; text-align: center; border-radius: var(--r-pill); }
+
+  @media (max-width: 1080px) {
+    .links, .cta { display: none; }
+    .lang { margin-left: auto; }
+    .burger { display: grid; }
+  }
+  @media (max-width: 640px) {
+    .navbar { padding-top: 10px; }
+    .bar { height: 58px; border-radius: 18px; padding: 0 8px 0 14px; gap: 12px; }
+    .logo :global(img) { height: 32px; }
+  }
+</style>

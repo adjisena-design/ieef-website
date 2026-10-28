@@ -1,0 +1,43 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { getLang, alternate, t } from '../i18n/ui';
+
+interface Props { title?: string; description?: string; image?: string }
+const lang = getLang(Astro.url);
+const { title, description = t(lang, 'site.tagline'), image = '/og-default.jpg' } = Astro.props;
+const fullTitle = title ? `${title} | IEEF` : `IEEF | ${t(lang, 'site.full')}`;
+const alt = alternate(Astro.url);
+const canonical = new URL(Astro.url.pathname, Astro.site);
+// Preview builds stay out of search engines until launch. Set PUBLIC_INDEXABLE=true on the production build.
+const indexable = import.meta.env.PUBLIC_INDEXABLE === 'true';
+---
+<!doctype html>
+<html lang={lang}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{fullTitle}</title>
+  <meta name="description" content={description} />
+  {!indexable && <meta name="robots" content="noindex, nofollow" />}
+  <link rel="canonical" href={canonical} />
+  <link rel="alternate" hreflang={lang} href={canonical} />
+  <link rel="alternate" hreflang={alt.lang} href={new URL(alt.path, Astro.site)} />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <meta name="theme-color" content="#083868" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="IEEF" />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={new URL(image, Astro.site)} />
+  <meta property="og:locale" content={lang === 'id' ? 'id_ID' : 'en_US'} />
+  <meta name="twitter:card" content="summary_large_image" />
+</head>
+<body>
+  <slot name="hero"><Nav /></slot>
+  <main id="main"><slot /></main>
+  <Footer />
+</body>
+</html>

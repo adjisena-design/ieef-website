@@ -1,0 +1,26 @@
+---
+// Minimal line-icon set (24px grid, 1.8 stroke).
+const PATHS = {
+  arrow: 'M5 12h14m-6-6l6 6-6 6',
+  menu: 'M4 7h16M4 12h16M4 17h16',
+  close: 'M6 6l12 12M18 6L6 18',
+  chevron: 'M6 9l6 6 6-6',
+  doc: 'M7 3h7l5 5v13H7zM14 3v5h5M9 13h8M9 17h6',
+  mail: 'M4 6h16v12H4zM4 7l8 6 8-6',
+  pin: 'M12 21s-7-6.5-7-12a7 7 0 0114 0c0 5.5-7 12-7 12zm0-9a3 3 0 100-6 3 3 0 000 6z',
+  external: 'M14 4h6v6M20 4l-9 9M18 14v5H5V6h5',
+  chart: 'M4 19V5m0 14h16M8 15l3-4 3 2 5-6',
+  chat: 'M4 6h16v10H8l-4 4V6z',
+  cap: 'M3 8l9-4 9 4-9 4-9-4zm4 2v5c0 1 2 3 5 3s5-2 5-3v-5',
+  megaphone: 'M4 10v4h3l6 4V6L7 10H4zm13-2a5 5 0 010 8',
+  download: 'M12 4v11m-5-5l5 5 5-5M5 20h14',
+} as const;
+export type IconName = keyof typeof PATHS;
+interface Props { name: IconName; size?: number; class?: string; label?: string }
+const { name, size = 20, class: cls, label } = Astro.props;
+---
+<svg class={cls} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+  stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+  aria-hidden={label ? undefined : 'true'} role={label ? 'img' : undefined} aria-label={label}>
+  <path d={PATHS[name]} />
+</svg>

@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from './Button.astro';
+import { getLang, href } from '../i18n/ui';
+const lang = getLang(Astro.url);
+const copy = lang === 'id'
+  ? { k: 'Pratinjau', h: 'Halaman ini sedang dibangun', p: 'Situs baru IEEF dibangun bertahap. Halaman ini akan hadir pada tahap berikutnya.', b: 'Kembali ke beranda' }
+  : { k: 'Preview', h: 'This page is being rebuilt', p: 'The new IEEF site is being built in stages. This page arrives in an upcoming step.', b: 'Back to home' };
+---
+<Base title={copy.h}>
+  <section class="section"><div class="wrap cs">
+    <p class="eyebrow">{copy.k}</p><h1>{copy.h}</h1><p class="lede">{copy.p}</p>
+    <div style="margin-top:28px"><Button href={href(lang, '/')} icon="arrow">{copy.b}</Button></div>
+  </div></section>
+</Base>
+<style>.cs{min-height:50vh;display:flex;flex-direction:column;justify-content:center;max-width:720px}.cs h1{margin:14px 0}</style>

@@ -1,0 +1,60 @@
+/* IEEF design tokens — Plan B (painted landscape + glass).
+   Brand colours are taken from the IEEF logo and must not change. */
+:root {
+  /* brand */
+  --navy: #083868;
+  --navy-2: #104070;
+  --navy-deep: #0a2c4f;
+  --teal: #189080;
+  --mint: #78c0b8;
+  --sky: #5898c0;
+
+  /* Plan B supporting colours */
+  --warm: #ec9a4c;        /* sun / primary call-to-action */
+  --warm-soft: #ffd6a8;   /* accent text on dark painted art */
+  --paper: #f4efe3;       /* page background */
+  --paper-card: #fbf8f0;  /* card on paper */
+  --sage: #e6efe6;        /* quiet highlight band */
+
+  /* series theme colours (policy-brief covers, social posts) */
+  --theme-energy: #189080;
+  --theme-social: #b4602a;
+  --theme-regional: #2d4aa0;
+
+  /* text */
+  --ink: #13283f;
+  --muted: #55606a;
+  --line: rgba(19, 40, 63, .12);
+
+  /* type */
+  --font: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --fs-display: clamp(2.5rem, 1.6rem + 3.6vw, 3.9rem);
+  --fs-h2: clamp(1.9rem, 1.4rem + 1.6vw, 2.65rem);
+  --fs-h3: 1.125rem;
+  --fs-body: 1rem;
+  --fs-small: .875rem;
+  --fs-eyebrow: .78rem;
+
+  /* shape */
+  --r-sm: 12px;
+  --r-md: 20px;
+  --r-lg: 26px;
+  --r-pill: 999px;
+
+  /* layout */
+  --wrap: 1240px;
+  --gutter: 40px;
+  --section: 110px;
+
+  /* glass surfaces */
+  --glass-paper-bg: rgba(251, 248, 240, .55);
+  --glass-paper-line: rgba(255, 255, 255, .6);
+  --glass-navy-bg: rgba(8, 30, 70, .32);
+  --glass-navy-line: rgba(255, 255, 255, .22);
+  --glass-blur: 16px;
+  --shadow-soft: 0 18px 40px -22px rgba(10, 30, 40, .45);
+}
+
+@media (max-width: 640px) {
+  :root { --gutter: 20px; --section: 64px; }
+}
