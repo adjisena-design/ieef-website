@@ -338,12 +338,14 @@ const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', qualit
     .ctas { flex-direction: column; }
     .ctas :global(.btn) { width: 100%; }
     .lake { position: static; margin-top: 220px; }
-    .lake-panel { grid-template-columns: repeat(3, 1fr); padding: 18px; row-gap: 14px; }
+    .lake-panel { grid-template-columns: auto auto auto; justify-content: space-between; padding: 18px; row-gap: 14px; }
     .lake-panel > * { padding: 0 10px; }
     .lake-panel > :first-child { grid-column: 1 / -1; padding: 0 0 12px; border-bottom: 1px solid rgba(255, 255, 255, .22); }
     .lake-panel > :nth-child(2) { border-left: 0; padding-left: 0; }
-    .stat b { font-size: 1.6rem; }
-    .stat span { font-size: .72rem; }
+    /* number and label side by side; the label wraps onto two short lines next to the number */
+    .stat { display: flex; align-items: center; gap: 7px; }
+    .stat b { font-size: 1.6rem; flex: none; }
+    .stat span { font-size: .72rem; line-height: 1.2; max-width: 9ch; }
     .about { grid-template-columns: 1fr; gap: 28px; margin-bottom: 28px; }
     .frame { height: 280px; }
     .services { gap: 12px; }
@@ -361,5 +363,13 @@ const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', qualit
     .partners { grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .partners li { height: 70px; padding: 10px; }
     .partners li :global(img) { max-height: 40px; }
+  }
+  @media (max-width: 374px) {
+    /* very narrow phones: number above label, all three aligned to the top */
+    .lake-panel { padding: 16px 14px; align-items: start; }
+    .lake-panel > * { padding: 0 8px; }
+    .stat { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .stat b { font-size: 1.45rem; }
+    .stat span { max-width: none; }
   }
 </style>
