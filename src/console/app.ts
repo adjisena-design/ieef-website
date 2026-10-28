@@ -217,7 +217,7 @@ async function renderOverview(main: HTMLElement) {
   renderPublish(pub, status);
   main.append(h('div', { class: 'stats' }, ENTITIES.map((e, i) =>
     h('button', { type: 'button', class: 'stat card', onClick: () => go(e.key) }, h('b', {}, counts[i] as number), h('span', {}, e.label)))));
-  if (can.owner()) main.append(renderHookSettings(status.configured));
+  if (can.owner()) main.append(renderHookSettings(status.configured, status.abort_configured));
   main.append(h('section', { class: 'card help' },
     h('h2', {}, 'How it works'),
     h('ol', {},
@@ -234,7 +234,8 @@ function renderPublish(box: HTMLElement, s: any) {
   clear(box);
   const BUILD_MIN = 10;
   const since = s.last_at ? (Date.now() - new Date(s.last_at).getTime()) / 60000 : Infinity;
-  const building = since < BUILD_MIN + 2;
+  const cancelled = !!s.cancelled_at;
+  const building = since < BUILD_MIN + 2 && !cancelled;
   const failed = s.last_response && s.last_response.status && s.last_response.status >= 300;
   box.append(h('div', { class: 'pub-text' },
     h('h2', {}, 'Publish to the website'),
@@ -244,30 +245,61 @@ function renderPublish(box: HTMLElement, s: any) {
       : h('p', {}, s.pending_changes > 0
           ? `${s.pending_changes} saved change${s.pending_changes === 1 ? '' : 's'} not yet on the website.`
           : 'The website is up to date with the database.',
-        s.last_at ? h('span', { class: 'muted' }, ` Last published ${ago(s.last_at)}${s.last_by ? ' by ' + s.last_by : ''}.`) : null),
+        cancelled && since < 60 ? h('span', { class: 'muted' }, ` Last rebuild was aborted ${ago(s.cancelled_at)}${s.cancelled_by ? ' by ' + s.cancelled_by : ''}.`)
+          : s.last_at ? h('span', { class: 'muted' }, ` Last published ${ago(s.last_at)}${s.last_by ? ' by ' + s.last_by : ''}.`) : null),
     s.pending_drafts > 0 ? h('p', { class: 'muted' }, `${s.pending_drafts} draft${s.pending_drafts === 1 ? '' : 's'} waiting for review.`) : null,
     building && !failed ? h('div', { class: 'bar' }, h('i', { style: `width:${Math.min(100, (since / BUILD_MIN) * 100)}%` })) : null));
-  if (can.edit()) {
-    const btn = h('button', { type: 'button', class: 'btn primary', disabled: !s.configured || (building && since < 2) }, building ? 'Publish again' : 'Publish now');
-    btn.addEventListener('click', async () => {
-      btn.disabled = true; btn.textContent = 'Starting...';
-      try { await rpc('console_publish'); toast('Rebuild started. The website updates in about 10 minutes.'); renderPublish(box, await rpc('console_publish_status')); }
-      catch (e: any) { toast(e.message, 'err'); btn.disabled = false; btn.textContent = 'Publish now'; }
+  if (!can.edit()) return;
+  const btn = h('button', { type: 'button', class: 'btn primary', disabled: !s.configured || (building && since < 2) }, building ? 'Publish again' : 'Publish now');
+  btn.addEventListener('click', async () => {
+    const ok = await confirmBox('Publish to the website?',
+      `The website rebuilds with everything saved in the console${s.pending_changes ? ` (${s.pending_changes} change${s.pending_changes === 1 ? '' : 's'} not yet live)` : ''}. It takes about 10 minutes, and you can abort it while it runs.`,
+      'Publish', 'primary');
+    if (!ok) return;
+    btn.disabled = true; btn.textContent = 'Starting...';
+    try { await rpc('console_publish'); toast('Rebuild started. The website updates in about 10 minutes.'); renderPublish(box, await rpc('console_publish_status')); }
+    catch (e: any) { toast(e.message, 'err'); btn.disabled = false; btn.textContent = 'Publish now'; }
+  });
+  const acts = h('div', { class: 'pub-actions' }, btn);
+  if (building && !failed) {
+    const abort = h('button', { type: 'button', class: 'btn danger-ghost' }, 'Abort');
+    abort.addEventListener('click', async () => {
+      if (!s.abort_configured) return toast('Abort is not set up yet. The owner needs to add a Cloudflare API token in Website settings below.', 'err');
+      if (!(await confirmBox('Abort this rebuild?', 'The website stays exactly as it is now. Saved changes remain in the console and go live the next time someone publishes.', 'Abort rebuild'))) return;
+      abort.disabled = true; abort.textContent = 'Aborting...';
+      const { data, error } = await sb.functions.invoke('cancel-build', { method: 'POST' });
+      if (error) {
+        let msg = error.message;
+        try { msg = (await (error as any).context?.json())?.error ?? msg; } catch { /* keep message */ }
+        toast(msg, 'err'); abort.disabled = false; abort.textContent = 'Abort'; return;
+      }
+      if (data?.ok) toast('Rebuild aborted. The website was not changed.');
+      renderPublish(box, await rpc('console_publish_status'));
     });
-    box.append(h('div', { class: 'pub-actions' }, btn, s.configured ? null : h('span', { class: 'small muted' }, 'Publishing is not set up yet.'),
-      h('a', { class: 'link', href: SITE || '/', target: '_blank', rel: 'noopener' }, 'Open website')));
+    acts.append(abort);
   }
+  if (!s.configured) acts.append(h('span', { class: 'small muted' }, 'Publishing is not set up yet.'));
+  acts.append(h('a', { class: 'link', href: SITE || '/', target: '_blank', rel: 'noopener' }, 'Open website'));
+  box.append(acts);
 }
 
-function renderHookSettings(configured: boolean) {
-  const input = h('input', { type: 'url', placeholder: 'https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/...', autocomplete: 'off' });
+function renderHookSettings(configured: boolean, abortConfigured: boolean) {
+  const input = h('input', { type: 'url', placeholder: 'https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/...', autocomplete: 'off', 'aria-label': 'Deploy hook URL' });
+  const token = h('input', { type: 'password', placeholder: 'Cloudflare API token', autocomplete: 'off', 'aria-label': 'Cloudflare API token' });
   return h('section', { class: 'card' },
     h('h2', {}, 'Website settings (owner only)'),
-    h('p', { class: 'muted' }, configured ? 'The Cloudflare deploy hook is set. Paste a new one here only if you replace it.' : 'Paste the Cloudflare deploy hook URL to enable the Publish button.'),
+    h('p', { class: 'muted' }, configured ? 'Deploy hook: set. Paste a new one only if you replace it.' : 'Paste the Cloudflare deploy hook URL to enable the Publish button.'),
     h('div', { class: 'inline-form' }, input, h('button', { type: 'button', class: 'btn', onClick: async () => {
       try { await rpc('console_set_deploy_hook', { p_url: input.value.trim() }); toast('Deploy hook saved.'); go('overview'); }
       catch (e: any) { toast(e.message, 'err'); }
-    } }, 'Save')));
+    } }, 'Save')),
+    h('p', { class: 'muted', style: 'margin-top:18px' }, abortConfigured
+      ? 'Abort button: set up. Paste a new token only if you replace it.'
+      : 'To enable the Abort button, create a Cloudflare API token with the permission "Workers Builds Configuration: Edit" for the IEEF account and paste it here. It is stored in the database and never shown again.'),
+    h('div', { class: 'inline-form' }, token, h('button', { type: 'button', class: 'btn', onClick: async () => {
+      try { await rpc('console_set_cf_token', { p_token: (token as HTMLInputElement).value.trim() }); toast('Cloudflare token saved. Abort is ready.'); go('overview'); }
+      catch (e: any) { toast(e.message, 'err'); }
+    } }, 'Save token')));
 }
 
 // ---------------------------------------------------------------- content lists
@@ -595,7 +627,7 @@ const ACTION: Record<string, string> = {
   insert: 'added', update: 'edited', delete: 'deleted', sign_in: 'signed in', publish: 'published the website',
   code_created: 'created an access code for', code_revoked: 'revoked the code of', code_reinstated: 'reinstated the code of',
   code_edited: 'edited the code of', code_replaced: 'issued a new code for', code_deleted: 'deleted the code of',
-  draft_submitted: 'sent a draft:', draft_approved: 'approved a draft:', draft_rejected: 'returned a draft:', deploy_hook_set: 'updated the deploy hook',
+  draft_submitted: 'sent a draft:', draft_approved: 'approved a draft:', draft_rejected: 'returned a draft:', deploy_hook_set: 'updated the deploy hook', publish_cancelled: 'aborted the website rebuild', cf_token_set: 'updated the Cloudflare token',
 };
 async function renderActivity(main: HTMLElement) {
   const items = await rpc<any[]>('console_activity', { p_limit: 200 });
