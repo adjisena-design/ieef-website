@@ -41,15 +41,15 @@ def find_place(text):
 ROLES = {
     'ir-dzikri-firmansyah-hakam-st-pgdip-msc-phd-cfpr': 'Executive Director, IEEF',
     'yudo-anggoro-stmsmphd': 'Director, Center for Policy and Public Management, SBM ITB',
-    'dr-erman-a-sumirat-se-mbuss-csa-crp-cibcwm-ak': 'Strategic finance, investment and risk management',
-    'atika-irawan-smn-msc-phd-cand': 'Lecturer, SBM ITB: finance and Islamic finance',
-    'achmad-billy-zulqiyami-st-sh-mh-phd-cand': 'Business law, regulation and policy studies',
-    'alif-hijriah-ssi-msi': 'Quantitative economic analysis and modelling',
+    'dr-erman-a-sumirat-se-mbuss-csa-crp-cibcwm-ak': 'Strategic Finance, Investment and Risk Management',
+    'atika-irawan-smn-msc-phd-cand': 'Lecturer, SBM ITB: Finance and Islamic Finance',
+    'achmad-billy-zulqiyami-st-sh-mh-phd-cand': 'Business Law, Regulation and Policy Studies',
+    'alif-hijriah-ssi-msi': 'Quantitative Economic Analysis and Modelling',
     'nitha-pricillia-se-mm-phd-cand': 'Program Director, CRMS Indonesia',
     'khairil-insan-bintang-spd-mpd': 'Researcher, IEEF',
-    'sophia-roosma-hardeny-st-mba': 'Construction management and project risk',
+    'sophia-roosma-hardeny-st-mba': 'Construction Management and Project Risk',
     'anisya-nurfitri-k-spd-msm': 'Project Manager and Research Assistant, IEEF',
-    'fadhil-nurilman-muhammad-sm-mba': 'Economic impact and feasibility studies',
+    'fadhil-nurilman-muhammad-sm-mba': 'Economic Impact and Feasibility Studies',
     'ihda-farhatun-nisak-spd-mm': 'Researcher, IEEF',
 }
 about = atoms('about-us')

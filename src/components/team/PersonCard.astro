@@ -35,7 +35,7 @@ const role = pick(person, 'role', lang);
   .role { color: var(--muted); font-size: .86rem; line-height: 1.4; }
   .go { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; color: var(--teal); font-weight: 650; font-size: .88rem; }
   .large { flex-direction: row; }
-  .large .ph { flex: 0 0 42%; aspect-ratio: auto; min-height: 380px; }
+  .large .ph { flex: 0 0 auto; width: min(320px, 46%); aspect-ratio: 4 / 5; }
   .large .tx { align-content: center; padding: 36px; gap: 10px; }
   .large strong { font-size: 1.5rem; letter-spacing: -.015em; }
   .large .role { font-size: 1rem; }
@@ -44,7 +44,7 @@ const role = pick(person, 'role', lang);
     strong { font-size: .92rem; }
     .role { font-size: .78rem; }
     .large { flex-direction: column; }
-    .large .ph { min-height: 0; aspect-ratio: 4 / 5; }
+    .large .ph { width: 100%; }
     .large .tx { padding: 22px; }
     .large strong { font-size: 1.2rem; }
   }
