@@ -145,9 +145,11 @@ for page in ['research-publication', 'page-2-research-2018-2022', 'page-3-resear
         key = re.sub(r'\W+', '', title.lower())
         if key in research:
             if research[key]['year'] != year:
-                issues.append(f'Research "{title[:60]}…" is listed twice with different years ({research[key]["year"]} and {year}); kept {max(year, research[key]["year"])}.')
-                research[key]['year'] = max(year, research[key]['year'])
-            continue
+                # same title listed with a different year: keep both entries, as on the old site
+                issues.append(f'Research "{title[:60]}…" is listed twice with different years ({research[key]["year"]} and {year}); both kept as published.')
+                key = f'{key}-{year}'
+            else:
+                continue
         research[key] = {'title': title, 'year': year, 'url': url, 'source_page': page}
 for h in highlighted:
     k = re.sub(r'\W+', '', h['title'].lower())

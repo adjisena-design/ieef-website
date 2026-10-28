@@ -801,6 +801,22 @@
  },
  {
   "kind": "research",
+  "slug": "the-effect-of-gdp-and-exchange-rate-on-import-of-photovoltaic-cells-in-r",
+  "title": "The Effect of GDP and Exchange Rate on Import of Photovoltaic Cells in Indonesia",
+  "summary_en": null,
+  "summary_id": null,
+  "year": 2022,
+  "published_on": null,
+  "theme": null,
+  "pdf_url": null,
+  "journal_url": "https://scholar.unair.ac.id/en/publications/the-effect-of-gdp-and-exchange-rate-on-import-of-photovoltaic-cel",
+  "cover": null,
+  "featured": false,
+  "sort": 41,
+  "published": true
+ },
+ {
+  "kind": "research",
   "slug": "mega-conversion-from-lpg-to-induction-stove-to-achieve-indonesias-clea",
   "title": "Mega conversion from LPG to induction stove to achieve Indonesia's clean energy transition",
   "summary_en": null,
@@ -812,7 +828,7 @@
   "journal_url": "https://www.sciencedirect.com/science/article/pii/S2211467X22000554",
   "cover": null,
   "featured": true,
-  "sort": 41,
+  "sort": 42,
   "published": true
  },
  {
@@ -828,7 +844,7 @@
   "journal_url": "https://www.mdpi.com/2227-7099/9/4/192",
   "cover": null,
   "featured": false,
-  "sort": 42,
+  "sort": 43,
   "published": true
  },
  {
@@ -844,7 +860,7 @@
   "journal_url": "https://www.tandfonline.com/doi/full/10.1080/20430795.2020.1848179",
   "cover": null,
   "featured": false,
-  "sort": 43,
+  "sort": 44,
   "published": true
  },
  {
@@ -860,7 +876,7 @@
   "journal_url": "https://www.mdpi.com/1996-1073/13/24/6741",
   "cover": null,
   "featured": false,
-  "sort": 44,
+  "sort": 45,
   "published": true
  },
  {
@@ -876,7 +892,7 @@
   "journal_url": "https://www.mdpi.com/1996-1073/13/22/5903",
   "cover": null,
   "featured": false,
-  "sort": 45,
+  "sort": 46,
   "published": true
  },
  {
@@ -892,7 +908,7 @@
   "journal_url": "https://www.sciencedirect.com/science/article/abs/pii/S0957178718302364",
   "cover": null,
   "featured": false,
-  "sort": 46,
+  "sort": 47,
   "published": true
  },
  {
@@ -908,7 +924,7 @@
   "journal_url": "https://www.econjournals.com/index.php/ijeep/article/view/6005",
   "cover": null,
   "featured": false,
-  "sort": 47,
+  "sort": 48,
   "published": true
  },
  {
@@ -924,7 +940,7 @@
   "journal_url": "https://www.econjournals.com/index.php/ijeep/article/view/6748",
   "cover": null,
   "featured": false,
-  "sort": 48,
+  "sort": 49,
   "published": true
  }
 ]

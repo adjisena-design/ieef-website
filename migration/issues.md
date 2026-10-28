@@ -1,7 +1,7 @@
 # Issues found on the old site
 
 - Policy briefs: only the three newest show a date (on the cover image). Older briefs have no date on the site; they keep their display order.
-- Research "The Effect of GDP and Exchange Rate on Import of Photovoltai…" is listed twice with different years (2024 and 2022); kept 2024.
+- Research "The Effect of GDP and Exchange Rate on Import of Photovoltai…" is listed twice with different years (2024 and 2022); both kept as published.
 - `press-release-1` names the institute incorrectly ("Institute for Economy, Energy, and Finance" or "Indonesia Energy Economics Forum"). Kept as published; worth correcting.
 - `press-release-3` names the institute incorrectly ("Institute for Economy, Energy, and Finance" or "Indonesia Energy Economics Forum"). Kept as published; worth correcting.
 - Career pages are written in Bahasa Indonesia only; English versions will be translated for the EN side.
