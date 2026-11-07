@@ -66,5 +66,23 @@ export const pubsSection = {
 
 
 
+export const deckSection = {
+  eyebrow: { en: 'Organization profile', id: 'Profil organisasi' } as L,
+  title: { en: 'IEEF at a glance', id: 'Mengenal IEEF' } as L,
+  body: {
+    en: 'Our pitch deck: who we are, our flagship programmes, the team, our track record and how to work with us. Browse it here or download the PDF.',
+    id: 'Pitch deck kami: siapa kami, program unggulan, tim, rekam jejak, dan cara bekerja sama dengan kami. Lihat di sini atau unduh PDF-nya.',
+  } as L,
+  download: { en: 'Download PDF', id: 'Unduh PDF' } as L,
+  fullscreen: { en: 'Full screen', id: 'Layar penuh' } as L,
+  exitFullscreen: { en: 'Exit full screen', id: 'Keluar layar penuh' } as L,
+  prev: { en: 'Previous slide', id: 'Slide sebelumnya' } as L,
+  next: { en: 'Next slide', id: 'Slide berikutnya' } as L,
+  loading: { en: 'Loading slides…', id: 'Memuat slide…' } as L,
+  failed: { en: 'The slides could not be shown here. You can still download the PDF.', id: 'Slide tidak dapat ditampilkan di sini. Anda tetap dapat mengunduh PDF-nya.' } as L,
+  slide: { en: 'Slide', id: 'Slide' } as L,
+  updated: { en: 'Updated', id: 'Diperbarui' } as L,
+};
+
 export const partnersTitle = { en: 'Our network & collaboration', id: 'Jejaring & kolaborasi kami' } as L;
 

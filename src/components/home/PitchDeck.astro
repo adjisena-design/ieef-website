@@ -1,0 +1,267 @@
+---
+// Home-page section with the live pitch deck: slides shown in place (PDF.js, loaded only when the section comes near),
+// previous/next, a slide slider, keyboard and swipe, full screen, and a direct PDF download.
+// The deck is chosen in the console (Pitch Deck); see getPitchDeck() in lib/content.ts.
+import Icon from '../Icon.astro';
+import { getLang } from '../../i18n/ui';
+import { deckSection as D } from '../../data/home';
+import { formatDate, type PitchDeck } from '../../lib/content';
+import { fileUrl } from '../../lib/media';
+
+interface Props { deck: PitchDeck }
+const { deck } = Astro.props;
+const lang = getLang(Astro.url);
+const url = fileUrl(deck.pdf)!;
+const fileName = `IEEF-Organization-Profile-${deck.released_on.slice(0, 7)}.pdf`;
+// same-origin files download through the attribute; files in the Supabase bucket through ?download=
+const downloadHref = url.startsWith('/') ? url : `${url}${url.includes('?') ? '&' : '?'}download=${encodeURIComponent(fileName)}`;
+const L = Object.fromEntries(Object.entries(D).map(([k, v]) => [k, v[lang]]));
+---
+<section class="section deck-sec" aria-labelledby="deck-title">
+  <div class="wrap">
+    <div class="deck-head">
+      <div>
+        <p class="eyebrow">{D.eyebrow[lang]}</p>
+        <h2 id="deck-title">{D.title[lang]}</h2>
+        <p class="lede">{D.body[lang]}</p>
+      </div>
+      <div class="deck-actions">
+        <a class="dl" href={downloadHref} download={fileName}>
+          <Icon name="download" size={18} /> {D.download[lang]}
+        </a>
+        <span class="meta">PDF{deck.pages ? ` · ${deck.pages} slides` : ''} · {D.updated[lang]} {formatDate(deck.released_on, lang, 'long')}</span>
+      </div>
+    </div>
+
+    <div class="viewer" data-pdf={url} data-labels={JSON.stringify(L)} tabindex="0"
+      role="region" aria-roledescription="slide viewer" aria-label={D.title[lang]}>
+      <div class="stage">
+        <canvas class="slide" role="img" aria-label=""></canvas>
+        <p class="state" aria-live="polite">{D.loading[lang]}</p>
+        <noscript><p class="state"><a href={url}>{D.download[lang]}</a></p></noscript>
+        <button type="button" class="nav prev" aria-label={D.prev[lang]} disabled><Icon name="chevron" size={26} /></button>
+        <button type="button" class="nav next" aria-label={D.next[lang]} disabled><Icon name="chevron" size={26} /></button>
+      </div>
+      <div class="bar">
+        <span class="count" aria-live="polite"><b class="cur">1</b> / <span class="tot">{deck.pages ?? '–'}</span></span>
+        <input class="seek" type="range" min="1" max={deck.pages ?? 1} value="1" step="1" aria-label={D.slide[lang]} disabled />
+        <button type="button" class="full" aria-pressed="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path class="ico-open" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+            <path class="ico-close" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" />
+          </svg>
+          <span class="full-label">{D.fullscreen[lang]}</span>
+        </button>
+        <a class="dl small" href={downloadHref} download={fileName} aria-label={D.download[lang]}><Icon name="download" size={18} /></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import workerSrc from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
+
+  type Labels = Record<string, string>;
+  for (const root of document.querySelectorAll<HTMLElement>('.viewer[data-pdf]')) setup(root);
+
+  function setup(root: HTMLElement) {
+    const L: Labels = JSON.parse(root.dataset.labels!);
+    const stage = root.querySelector<HTMLElement>('.stage')!;
+    const canvas = root.querySelector<HTMLCanvasElement>('canvas.slide')!;
+    const state = root.querySelector<HTMLElement>('.state')!;
+    const prev = root.querySelector<HTMLButtonElement>('.prev')!;
+    const next = root.querySelector<HTMLButtonElement>('.next')!;
+    const seek = root.querySelector<HTMLInputElement>('.seek')!;
+    const cur = root.querySelector<HTMLElement>('.cur')!;
+    const tot = root.querySelector<HTMLElement>('.tot')!;
+    const full = root.querySelector<HTMLButtonElement>('.full')!;
+    const fullLabel = root.querySelector<HTMLElement>('.full-label')!;
+
+    let doc: any = null;
+    let page = 1;
+    let total = 0;
+    let width = 0;                                   // CSS width the cache was rendered for
+    const cache = new Map<number, Promise<HTMLCanvasElement>>();
+
+    const renderPage = (n: number): Promise<HTMLCanvasElement> => {
+      if (!cache.has(n)) {
+        cache.set(n, (async () => {
+          const p = await doc.getPage(n);
+          const base = p.getViewport({ scale: 1 });
+          const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+          const vp = p.getViewport({ scale: (width * dpr) / base.width });
+          const c = document.createElement('canvas');
+          c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+          await p.render({ canvas: c, canvasContext: c.getContext('2d')!, viewport: vp }).promise;
+          return c;
+        })());
+        // keep memory small: only pages near the current one stay rendered
+        for (const k of cache.keys()) if (Math.abs(k - page) > 3) cache.delete(k);
+      }
+      return cache.get(n)!;
+    };
+
+    const show = async (n: number) => {
+      if (!doc) return;
+      page = Math.min(Math.max(1, n), total);
+      cur.textContent = String(page);
+      seek.value = String(page);
+      prev.disabled = page <= 1;
+      next.disabled = page >= total;
+      canvas.setAttribute('aria-label', `${L.slide} ${page} / ${total}`);
+      const want = page;
+      const src = await renderPage(want);
+      if (want !== page) return;                     // the visitor moved on while this slide was rendering
+      canvas.width = src.width; canvas.height = src.height;
+      canvas.getContext('2d')!.drawImage(src, 0, 0);
+      root.classList.add('ready');
+      // warm up the neighbours
+      if (page < total) renderPage(page + 1);
+      if (page > 1) renderPage(page - 1);
+    };
+
+    const measure = () => {
+      const w = Math.round(stage.clientWidth);
+      if (!w || Math.abs(w - width) < 24) return false;
+      width = w; cache.clear(); return true;
+    };
+
+    const load = async () => {
+      try {
+        const pdfjs: any = await import('pdfjs-dist/legacy/build/pdf.mjs');
+        pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+        doc = await pdfjs.getDocument({ url: root.dataset.pdf, disableAutoFetch: true, rangeChunkSize: 524288, verbosity: 0 }).promise;
+        total = doc.numPages;
+        tot.textContent = String(total);
+        seek.max = String(total);
+        seek.disabled = false;
+        measure();
+        await show(1);
+        state.textContent = '';
+      } catch (err) {
+        console.warn('[pitch deck]', err);
+        state.textContent = L.failed;
+        root.classList.add('failed');
+      }
+    };
+
+    // load when the section comes near, so the home page stays light
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { io.disconnect(); load(); }
+    }, { rootMargin: '600px 0px' });
+    io.observe(root);
+
+    prev.addEventListener('click', () => show(page - 1));
+    next.addEventListener('click', () => show(page + 1));
+    seek.addEventListener('input', () => show(Number(seek.value)));
+    root.addEventListener('keydown', (e) => {
+      if ((e.target as HTMLElement).matches('input')) return;
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || (e.key === ' ' && e.target === root)) { e.preventDefault(); show(page + 1); }
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); show(page - 1); }
+      else if (e.key === 'Home') { e.preventDefault(); show(1); }
+      else if (e.key === 'End') { e.preventDefault(); show(total); }
+      else if (e.key === 'Escape' && root.classList.contains('is-full') && !document.fullscreenElement) setFull(false);
+    });
+
+    // swipe on touch screens
+    let x0: number | null = null, y0 = 0;
+    stage.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+    stage.addEventListener('touchend', (e) => {
+      if (x0 == null) return;
+      const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+      x0 = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.3) show(page + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+
+    // full screen: the browser's own where it exists, otherwise (iPhone) a fixed overlay
+    const setFull = async (on: boolean) => {
+      const native = !!root.requestFullscreen;
+      if (native) {
+        try { if (on) await root.requestFullscreen(); else if (document.fullscreenElement) await document.exitFullscreen(); }
+        catch { root.classList.toggle('is-full', on); }
+      } else root.classList.toggle('is-full', on);
+      if (!native) document.documentElement.classList.toggle('deck-lock', on);
+      sync();
+    };
+    const sync = () => {
+      const on = document.fullscreenElement === root || root.classList.contains('is-full');
+      full.setAttribute('aria-pressed', String(on));
+      fullLabel.textContent = on ? L.exitFullscreen : L.fullscreen;
+      root.classList.toggle('fs', on);
+      requestAnimationFrame(() => { if (measure()) show(page); });
+    };
+    full.addEventListener('click', () => setFull(!(document.fullscreenElement === root || root.classList.contains('is-full'))));
+    document.addEventListener('fullscreenchange', sync);
+
+    let t: number | undefined;
+    window.addEventListener('resize', () => { clearTimeout(t); t = window.setTimeout(() => { if (measure()) show(page); }, 150); });
+  }
+</script>
+
+<style>
+  .deck-sec { padding-bottom: 40px; }
+  .deck-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 28px; margin-bottom: 32px; flex-wrap: wrap; }
+  .deck-head h2 { margin: 12px 0 14px; }
+  .deck-head .lede { max-width: 620px; color: var(--muted); }
+  .deck-actions { display: grid; justify-items: end; gap: 10px; }
+  .dl { display: inline-flex; align-items: center; gap: 10px; height: 50px; padding: 0 24px; border-radius: var(--r-pill);
+    background: var(--navy); color: #fff; font-weight: 650; font-size: .94rem; white-space: nowrap;
+    box-shadow: 0 12px 26px -14px rgba(8, 56, 104, .7); transition: transform .15s ease; }
+  .dl:hover { transform: translateY(-1px); }
+  .meta { font-size: .8rem; color: var(--muted); }
+
+  .viewer { position: relative; border-radius: var(--r-lg); padding: 14px; background: var(--navy);
+    box-shadow: 0 30px 60px -32px rgba(8, 40, 80, .55); outline: none; }
+  .viewer:focus-visible { box-shadow: 0 0 0 3px var(--warm), 0 30px 60px -32px rgba(8, 40, 80, .55); }
+  .stage { position: relative; aspect-ratio: 16 / 9; border-radius: calc(var(--r-lg) - 8px); overflow: hidden; background: #f4efe3; }
+  .slide { display: block; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity .25s ease; }
+  .viewer.ready .slide { opacity: 1; }
+  .state { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--muted); font-size: .95rem; }
+  .viewer.ready .state:empty { display: none; }
+  .state a { color: var(--navy); font-weight: 650; text-decoration: underline; }
+
+  .nav { position: absolute; top: 50%; translate: 0 -50%; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%;
+    color: var(--navy); background: rgba(255, 255, 255, .82); border: 1px solid rgba(19, 40, 63, .1);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: 0 10px 24px -14px rgba(8, 40, 80, .6);
+    opacity: 0; transition: opacity .2s ease, background-color .2s ease; cursor: pointer; }
+  .nav.prev { left: 14px; } .nav.next { right: 14px; }
+  .nav.prev :global(svg) { rotate: 90deg; } .nav.next :global(svg) { rotate: -90deg; }
+  .viewer.ready:hover .nav:not(:disabled), .nav:focus-visible { opacity: 1; }
+  .nav:hover { background: #fff; }
+  .nav:disabled { cursor: default; }
+
+  .bar { display: flex; align-items: center; gap: 16px; padding: 14px 6px 2px; color: #fff; }
+  .count { font-size: .9rem; min-width: 64px; font-variant-numeric: tabular-nums; opacity: .9; }
+  .count b { font-weight: 750; }
+  .seek { flex: 1; accent-color: var(--warm); height: 4px; cursor: pointer; }
+  .seek:disabled { opacity: .4; }
+  .full { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: var(--r-pill);
+    color: #fff; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .22); font: inherit; font-size: .85rem; font-weight: 650; cursor: pointer; }
+  .full:hover { background: rgba(255, 255, 255, .18); }
+  .full .ico-close, .viewer.fs .full .ico-open { display: none; }
+  .viewer.fs .full .ico-close { display: inline; }
+  .dl.small { display: none; width: 38px; height: 38px; padding: 0; justify-content: center; background: var(--warm); color: var(--navy-deep); box-shadow: none; }
+  .viewer.fs .dl.small { display: inline-flex; }
+
+  /* full screen: the slide fills the screen at its own proportions */
+  .viewer.fs { display: flex; flex-direction: column; justify-content: center; border-radius: 0; padding: 16px; background: #061f3d; }
+  .viewer.fs .stage { width: min(100%, calc((100dvh - 90px) * 16 / 9)); margin: 0 auto; }
+  .viewer.fs .bar { width: min(100%, calc((100dvh - 90px) * 16 / 9)); margin: 0 auto; }
+  .viewer.is-full { position: fixed; inset: 0; z-index: 1000; }
+  :global(html.deck-lock), :global(html.deck-lock body) { overflow: hidden; }
+
+  @media (max-width: 760px) {
+    .deck-actions { justify-items: start; }
+    .viewer { padding: 8px; border-radius: var(--r-md); }
+    .stage { border-radius: calc(var(--r-md) - 4px); }
+    .nav { width: 40px; height: 40px; opacity: 1; background: rgba(255, 255, 255, .7); }
+    .nav.prev { left: 6px; } .nav.next { right: 6px; }
+    .nav:disabled { opacity: 0; }
+    .bar { gap: 10px; padding: 10px 4px 2px; }
+    .full-label { display: none; }
+    .full { padding: 0; width: 38px; justify-content: center; }
+    .viewer.fs { padding: 8px; }
+  }
+  @media (hover: none) { .viewer.ready .nav:not(:disabled) { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .slide, .nav, .dl { transition: none; } }
+</style>

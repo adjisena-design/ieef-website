@@ -11,9 +11,11 @@ export interface Field {
   from?: string[];          // slug: build from these fields
   showIf?: (row: Record<string, any>) => boolean;
   folder?: string;          // upload folder in the media bucket
+  uploadOnly?: boolean;     // pdf: no pasted links (the site shows the file itself)
+  maxMB?: number;           // upload size limit (default 20 MB)
 }
 export interface Entity {
-  key: 'publications' | 'news' | 'careers' | 'people' | 'partners';
+  key: 'publications' | 'news' | 'careers' | 'people' | 'partners' | 'pitch_decks';
   label: string;
   singular: string;
   order: { column: string; ascending: boolean }[];
@@ -145,6 +147,23 @@ export const ENTITIES: Entity[] = [
       { key: 'logo', label: 'Logo', type: 'image', folder: 'partners', help: 'PNG or SVG with transparent background, trimmed to the logo.' },
       { key: 'website_url', label: 'Website', type: 'url' },
       sort, published,
+    ],
+  },
+  {
+    key: 'pitch_decks', label: 'Pitch Deck', singular: 'deck version',
+    order: [{ column: 'released_on', ascending: false }, { column: 'created_at', ascending: false }],
+    title: (r) => r.title, subtitle: (r) => [fmtDate(r.released_on), r.pages ? `${r.pages} slides` : null].filter(Boolean).join(' · '),
+    defaults: { published: true, featured: true, released_on: new Date().toISOString().slice(0, 10) },
+    sitePath: () => '/#deck-title',
+    fields: [
+      { key: 'title', label: 'Version name', type: 'text', required: true, help: 'For the console only, e.g. "Organization profile, March 2027".' },
+      { key: 'pdf', label: 'Deck (PDF)', type: 'pdf', folder: 'pitch-deck', required: true, uploadOnly: true, maxMB: 50,
+        help: 'Export the deck as PDF (PowerPoint: File > Export > PDF; Canva: Share > Download > PDF Standard), up to 50 MB. The website shows the slides from this file and visitors download it.' },
+      { key: 'released_on', label: 'Date', type: 'date', required: true, help: 'Shown on the website as "Updated ...".' },
+      { key: 'pages', label: 'Number of slides', type: 'number', help: 'Optional. Shown next to the Download button.' },
+      { key: 'featured', label: 'Live on website', type: 'bool', help: 'The live version is the one shown on the home page. Turning this on switches off the previous live version; older versions stay here so you can switch back. Press Publish afterwards.' },
+      { key: 'note', label: 'Internal note', type: 'textarea', help: 'What changed in this version. Not shown on the website.' },
+      published,
     ],
   },
 ];
