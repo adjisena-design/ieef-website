@@ -7,6 +7,7 @@ import snapPublications from '../data/snapshot/publications.json';
 import snapNews from '../data/snapshot/news.json';
 import snapCareers from '../data/snapshot/careers.json';
 import snapPartners from '../data/snapshot/partners.json';
+import snapDecks from '../data/snapshot/pitch_decks.json';
 
 export type Person = {
   slug: string; name: string; group: 'leadership' | 'researcher';
@@ -32,6 +33,7 @@ export type Career = {
   notes_en: string[]; notes_id: string[]; apply_url: string | null; poster: string | null;
   is_open: boolean; sort: number; published: boolean;
 };
+export type PitchDeck = { title: string; released_on: string; pdf: string; pages: number | null; featured: boolean; published: boolean };
 export type Partner = { name: string; logo: string | null; website_url: string | null; sort: number; published: boolean };
 
 const URL_ = import.meta.env.PUBLIC_SUPABASE_URL as string | undefined;
@@ -51,7 +53,15 @@ function table<T>(name: string, order: string, snapshot: unknown[]): Promise<T[]
         const res = await fetch(`${URL_}/rest/v1/${name}?select=*&published=is.true&order=${order}`, {
           headers: { apikey: KEY! },
         });
-        if (!res.ok) throw new Error(`Supabase ${name}: ${res.status} ${await res.text()}`);
+        if (!res.ok) {
+          const body = await res.text();
+          // a table added by a newer migration that is not applied yet: keep building with the snapshot
+          if (res.status === 404 && body.includes('PGRST205')) {
+            console.warn(`[content] ${name}: table not in the database yet, using snapshot`);
+            return fromSnapshot();
+          }
+          throw new Error(`Supabase ${name}: ${res.status} ${body}`);
+        }
         return res.json();
       } catch (err) {
         if (IN_CI) throw err;
@@ -70,6 +80,11 @@ export const getNews = async () =>
 /** The pinned headline article, or the newest one when none is pinned. */
 export const headlineNews = (items: News[]) => items.find((n) => n.featured) ?? items[0];
 export const getCareers = () => table<Career>('careers', 'sort.asc', snapCareers);
+/** The live pitch deck: the version marked live, or the newest published one. */
+export const getPitchDeck = async () => {
+  const decks = await table<PitchDeck>('pitch_decks', 'released_on.desc', snapDecks);
+  return decks.find((d) => d.featured) ?? decks[0] ?? null;
+};
 export const getPartners = () => table<Partner>('partners', 'sort.asc', snapPartners);
 
 export async function getBriefs() {

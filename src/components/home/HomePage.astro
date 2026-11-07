@@ -5,19 +5,20 @@ import Nav from '../Nav.astro';
 import Button from '../Button.astro';
 import Icon from '../Icon.astro';
 import Sparkline from '../Sparkline.astro';
+import PitchDeck from './PitchDeck.astro';
 import heroArt from '../../assets/art/paint_hero.jpg';
 import workArt from '../../assets/art/ieef-at-work.jpg';
 import heroArtMobile from '../../assets/art/paint_mobile.jpg';
 import duskArt from '../../assets/art/paint_dusk.jpg';
 import { t, href, getLang, DASHBOARDS } from '../../i18n/ui';
 import * as H from '../../data/home';
-import { getNews, getBriefs, getResearch, getPartners, pick, formatDate, headlineNews } from '../../lib/content';
+import { getNews, getBriefs, getResearch, getPartners, getPitchDeck, pick, formatDate, headlineNews } from '../../lib/content';
 import { media } from '../../lib/media';
 
 const lang = getLang(Astro.url);
 
 // content (Supabase at build time, snapshot otherwise)
-const [news, briefs, research, partners] = await Promise.all([getNews(), getBriefs(), getResearch(), getPartners()]);
+const [news, briefs, research, partners, deck] = await Promise.all([getNews(), getBriefs(), getResearch(), getPartners(), getPitchDeck()]);
 const latest = headlineNews(news);
 const featured = briefs.find((b) => b.featured) ?? briefs[0];
 const sideBriefs = briefs.filter((b) => b !== featured).slice(0, 2);
@@ -157,6 +158,8 @@ const strip = await getImage({ src: heroArt, width: 2000, format: 'webp', qualit
       </a>
     </div>
   </section>
+
+  {deck && <PitchDeck deck={deck} />}
 
   <section class="section partners-sec">
     <div class="wrap">

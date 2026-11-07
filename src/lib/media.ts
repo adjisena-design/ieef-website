@@ -16,3 +16,10 @@ export function media(value: string | null | undefined): ImageMetadata | string 
   if (/^https?:\/\//.test(value)) return value;
   return SUPABASE ? `${SUPABASE}/storage/v1/object/public/media/${value}` : null;
 }
+
+/** Public URL of an uploaded file (PDF): a site path ("/media/..."), a full URL, or a path in the "media" bucket. */
+export function fileUrl(value: string | null | undefined): string | null {
+  if (!value) return null;
+  if (value.startsWith('/') || /^https?:\/\//.test(value)) return value;
+  return SUPABASE ? `${SUPABASE}/storage/v1/object/public/media/${value}` : null;
+}

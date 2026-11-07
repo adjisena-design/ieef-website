@@ -57,6 +57,7 @@ const mediaUrl = (v?: string | null) => {
   if (!v) return null;
   if (v.startsWith('repo:')) return THUMBS[v] ?? null;
   if (/^https?:\/\//.test(v)) return v;
+  if (v.startsWith('/')) return v;                       // file shipped with the site (first pitch deck)
   return `${URL_}/storage/v1/object/public/media/${v}`;
 };
 
@@ -333,13 +334,15 @@ async function renderEntity(main: HTMLElement, ent: Entity) {
     for (const r of items) {
       const thumbVal = r.image ?? r.photo ?? r.logo ?? r.poster ?? r.cover;
       const thumb = mediaUrl(thumbVal);
+      const isDeck = ent.key === 'pitch_decks';
       const isHeadline = r.featured && (ent.key === 'news' || r.kind === 'policy_brief');
-      const autoHeadline = ent.key === 'news' && !rows.some((x) => x.featured) && r === rows[0];
+      const autoHeadline = (ent.key === 'news' || isDeck) && !rows.some((x) => x.featured) && r === rows.find((x) => x.published !== false);
       list.append(h('li', { class: 'row-wrap' }, h('button', { type: 'button', class: 'row', onClick: () => openEditor(ent, r) },
         h('span', { class: 'thumb' }, thumb ? h('img', { src: thumb, alt: '', loading: 'lazy' }) : thumbVal ? h('span', { class: 'tag' }, 'orig') : null),
         h('span', { class: 'row-text' }, h('b', {}, ent.title(r) || '(untitled)'), h('span', { class: 'muted' }, ent.subtitle(r))),
         r.published === false ? h('span', { class: 'pill off' }, 'Hidden') : h('span', { class: 'pill on' }, 'On site'),
-        isHeadline ? h('span', { class: 'pill warm' }, 'Headline') : r.featured ? h('span', { class: 'pill warm' }, 'Highlight')
+        isDeck ? (r.featured ? h('span', { class: 'pill warm' }, 'Live') : autoHeadline ? h('span', { class: 'pill soft', title: 'Newest version; shown because none is marked live' }, 'Live (newest)') : null)
+          : isHeadline ? h('span', { class: 'pill warm' }, 'Headline') : r.featured ? h('span', { class: 'pill warm' }, 'Highlight')
           : autoHeadline ? h('span', { class: 'pill soft', title: 'Newest article; shown as headline because none is pinned' }, 'Headline (newest)') : null),
         headlineButton(ent, r, () => go(ent.key))));
     }
@@ -350,7 +353,18 @@ async function renderEntity(main: HTMLElement, ent: Entity) {
 
 // one-click headline / highlight controls on list rows (editors and above)
 function headlineButton(ent: Entity, r: Row, refresh: () => void) {
-  if (!can.edit() || !('featured' in r) || (ent.key !== 'news' && ent.key !== 'publications')) return null;
+  if (!can.edit() || !('featured' in r)) return null;
+  if (ent.key === 'pitch_decks') {
+    if (r.featured) return null;                       // switch by making another version live
+    return h('button', { type: 'button', class: 'btn small row-act', onClick: async () => {
+      if (r.published === false) return toast('Turn on "Show on website" for this version first.', 'err');
+      const { error } = await sb.from(ent.key).update({ featured: true }).eq('id', r.id);
+      if (error) return toast(tableErr(error), 'err');
+      toast('This version is now live; the previous one is kept. Press Publish to update the website.');
+      refresh();
+    } }, 'Make live');
+  }
+  if (ent.key !== 'news' && ent.key !== 'publications') return null;
   const exclusive = ent.key === 'news' || r.kind === 'policy_brief';
   const label = r.featured ? (exclusive ? (ent.key === 'news' ? 'Unpin' : 'Remove headline') : 'Remove highlight') : (exclusive ? 'Make headline' : 'Highlight');
   return h('button', { type: 'button', class: `btn small ${r.featured ? 'ghost' : ''} row-act`, onClick: async () => {
@@ -410,7 +424,8 @@ function uploadControl(f: Field, row: Row, set: (v: any) => void) {
     if (f.type === 'image') {
       wrap.append(h('div', { class: 'preview' }, url ? h('img', { src: url, alt: '' }) : v ? h('span', { class: 'muted small' }, 'Image from the original site') : h('span', { class: 'muted small' }, 'No image')));
     } else {
-      wrap.append(h('input', { type: 'url', value: v ?? '', placeholder: 'https://drive.google.com/...', onInput: (e: any) => { row[f.key] = e.target.value || null; } }));
+      if (f.uploadOnly) wrap.append(h('p', { class: 'small' }, v ? (v.split('/').pop() ?? v) : h('span', { class: 'muted' }, 'No file yet')));
+      else wrap.append(h('input', { type: 'url', value: v ?? '', placeholder: 'https://drive.google.com/...', onInput: (e: any) => { row[f.key] = e.target.value || null; } }));
       if (url) wrap.append(h('a', { class: 'link small', href: url, target: '_blank', rel: 'noopener' }, 'Open current file'));
     }
     const file = h('input', { type: 'file', accept: f.type === 'image' ? 'image/jpeg,image/png,image/webp,image/avif' : 'application/pdf', class: 'sr-only', id: `up-${f.key}` });
@@ -418,7 +433,9 @@ function uploadControl(f: Field, row: Row, set: (v: any) => void) {
     file.addEventListener('change', async () => {
       const fl = file.files?.[0];
       if (!fl) return;
-      if (fl.size > 20 * 1024 * 1024) { toast('File is larger than 20 MB. Please compress it first.', 'err'); return; }
+      const max = f.maxMB ?? 20;
+      if (fl.size > max * 1024 * 1024) { toast(`File is larger than ${max} MB. Please compress it first.`, 'err'); return; }
+      if (f.type === 'pdf' && fl.type !== 'application/pdf') { toast('Please choose a PDF file.', 'err'); return; }
       if (f.type === 'image' && fl.size > 4 * 1024 * 1024) toast('Large image: it will be optimised on the website, but uploads are faster under 4 MB.', 'info');
       status.textContent = 'Uploading...';
       const ext = (fl.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '');
