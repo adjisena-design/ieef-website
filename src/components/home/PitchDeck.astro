@@ -199,7 +199,8 @@ const L = Object.fromEntries(Object.entries(D).map(([k, v]) => [k, v[lang]]));
 </script>
 
 <style>
-  .deck-sec { padding-bottom: 40px; }
+  /* follows the publications section directly, so the gap above is just that section's own bottom padding */
+  .deck-sec { padding-top: 0; padding-bottom: 40px; }
   .deck-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 28px; margin-bottom: 32px; flex-wrap: wrap; }
   .deck-head h2 { margin: 12px 0 14px; }
   .deck-head .lede { max-width: 620px; color: var(--muted); }
