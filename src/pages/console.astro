@@ -2,6 +2,7 @@
 // Team console. Static page; everything happens in the browser against Supabase with access-code sessions.
 import '@fontsource-variable/plus-jakarta-sans';
 import { getImage } from 'astro:assets';
+import heroArt from '../assets/art/paint_hero.jpg';
 // thumbnails for images that came from the original site (stored as "repo:..." in the database)
 const repo = import.meta.glob<{ default: ImageMetadata }>('../assets/migrated/**/*.{webp,png,jpg}', { eager: true });
 const thumbs: Record<string, string> = {};
@@ -9,6 +10,7 @@ for (const [path, mod] of Object.entries(repo)) {
   const img = await getImage({ src: mod.default, width: 320, format: 'webp', quality: 70 });
   thumbs['repo:' + path.replace('../assets/', '')] = img.src;
 }
+const art = await getImage({ src: heroArt, width: 1920, format: 'webp', quality: 70 });
 const url = import.meta.env.PUBLIC_SUPABASE_URL ?? '';
 const key = import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? '';
 ---
@@ -22,7 +24,7 @@ const key = import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? '';
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 </head>
 <body>
-  <div id="console" data-url={url} data-key={key} data-site="" data-thumbs={JSON.stringify(thumbs)}>
+  <div id="console" style={`--art:url(${art.src})`} data-url={url} data-key={key} data-site="" data-thumbs={JSON.stringify(thumbs)}>
     <div class="login-wrap"><p class="muted">Loading console...</p></div>
   </div>
   <div id="toasts" aria-live="polite"></div>
@@ -71,8 +73,9 @@ const key = import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? '';
   input:focus, select:focus, textarea:focus { outline: none; border-color: var(--teal-ink); box-shadow: 0 0 0 3px rgba(24, 144, 128, .18); }
 
   /* login */
-  .login-wrap { min-height: 100vh; display: grid; place-items: center; padding: 24px;
-    background: radial-gradient(1200px 600px at 80% -10%, #cfe3e0 0%, transparent 60%), radial-gradient(900px 500px at -10% 110%, #e9dcc0 0%, transparent 60%), var(--paper); }
+  /* login-wrap is a <main>, so undo the shell's main width cap and top alignment */
+  .login-wrap { min-height: 100vh; max-width: none; display: grid; place-items: center; align-content: center; padding: 24px;
+    background: linear-gradient(rgba(244, 239, 227, .18), rgba(6, 38, 74, .12)), var(--art) center / cover no-repeat, var(--paper); }
   .login { width: min(420px, 100%); display: grid; gap: 12px; padding: 34px; box-shadow: 0 30px 60px -40px rgba(8, 40, 70, .5); }
   .login-logo { margin-bottom: 4px; }
   .login label { font-weight: 650; font-size: .88rem; margin-top: 6px; }
