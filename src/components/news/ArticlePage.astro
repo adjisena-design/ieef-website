@@ -39,7 +39,7 @@ const jsonLd = {
   '@context': 'https://schema.org', '@type': 'NewsArticle', headline: title.slice(0, 110), description,
   datePublished: item.date, inLanguage: englishOnly ? 'en' : lang, mainEntityOfPage: pageUrl,
   image: ogImage ? [new URL(ogImage, Astro.site).toString()] : undefined,
-  author: { '@type': 'Organization', name: 'Institute for Energy, Economics & Finance', url: Astro.site?.toString() },
+  author: { '@type': 'Organization', name: 'Institute for Energy, Economics, and Finance', url: Astro.site?.toString() },
   publisher: { '@type': 'Organization', name: 'IEEF', logo: { '@type': 'ImageObject', url: new URL('/favicon.png', Astro.site).toString() } },
 };
 ---

@@ -6,7 +6,7 @@ export const defaultLang: Lang = 'en';
 export const ui = {
   en: {
     'site.name': 'IEEF',
-    'site.full': 'Institute for Energy, Economics & Finance',
+    'site.full': 'Institute for Energy, Economics, and Finance',
     'site.tagline': 'Empowering sustainable growth with economic and financial insight.',
     'nav.home': 'Home',
     'nav.about': 'About Us',
@@ -36,7 +36,7 @@ export const ui = {
   },
   id: {
     'site.name': 'IEEF',
-    'site.full': 'Institute for Energy, Economics & Finance',
+    'site.full': 'Institute for Energy, Economics, and Finance',
     'site.tagline': 'Mendorong pertumbuhan berkelanjutan melalui wawasan ekonomi dan keuangan.',
     'nav.home': 'Beranda',
     'nav.about': 'Tentang Kami',

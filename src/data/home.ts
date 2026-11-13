@@ -4,7 +4,7 @@ import type { Lang } from '../i18n/ui';
 type L = Record<Lang, string>;
 
 export const hero = {
-  eyebrow: { en: 'Institute for Energy, Economics & Finance', id: 'Institute for Energy, Economics & Finance' } as L,
+  eyebrow: { en: 'Institute for Energy, Economics, and Finance', id: 'Institute for Energy, Economics, and Finance' } as L,
   // <em> wraps the accent word (rendered italic teal)
   title: {
     en: 'Empowering <em>sustainable</em> growth with economic &amp; financial insight',

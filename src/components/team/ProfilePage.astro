@@ -26,7 +26,7 @@ const description = (paragraphs(pick(person, 'bio', lang))[0] ?? '').slice(0, 15
 <Base title={person.name} description={description} image={photo && typeof photo !== 'string' ? photo.src : undefined} jsonLd={{
   '@context': 'https://schema.org', '@type': 'Person', name: person.name, jobTitle: pick(person, 'role', lang) ?? undefined,
   description, url: new URL(Astro.url.pathname, Astro.site).toString(), sameAs: person.social_url ? [person.social_url] : undefined,
-  worksFor: { '@type': 'ResearchOrganization', name: 'Institute for Energy, Economics & Finance', url: Astro.site?.toString() },
+  worksFor: { '@type': 'ResearchOrganization', name: 'Institute for Energy, Economics, and Finance', url: Astro.site?.toString() },
 }}>
   <div slot="hero" class="top"><Nav /></div>
   <article class="wrap profile">

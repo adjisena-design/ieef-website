@@ -54,7 +54,7 @@ CAREERS_EN = {
         notes=[]),
     'research-associate': dict(
         title='Research Associate',
-        intro='SBM ITB and the Institute for Energy, Economics & Finance (IEEF) invite academics and researchers to contribute to '
+        intro='SBM ITB and the Institute for Energy, Economics, and Finance (IEEF) invite academics and researchers to contribute to '
               'strategic research in Energy Economics and Finance.\n\nThis position reports directly to Ir. Dzikri Firmansyah Hakam, '
               'S.T., Pg.Dip., M.Sc., Ph.D., CFP®, and is intended for candidates with a strong academic background and a record of '
               'internationally reputable publications.',

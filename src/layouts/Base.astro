@@ -14,7 +14,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 const indexable = import.meta.env.PUBLIC_INDEXABLE === 'true';
 const enPath = lang === 'en' ? Astro.url.pathname : alt.path;
 const org = {
-  '@context': 'https://schema.org', '@type': 'ResearchOrganization', name: 'Institute for Energy, Economics & Finance', alternateName: 'IEEF',
+  '@context': 'https://schema.org', '@type': 'ResearchOrganization', name: 'Institute for Energy, Economics, and Finance', alternateName: 'IEEF',
   url: Astro.site?.toString(), logo: new URL('/favicon.png', Astro.site).toString(), email: 'ieef@ieef.or.id',
   address: { '@type': 'PostalAddress', streetAddress: 'Jl. Ganesa, Lb. Siliwangi, Coblong', addressLocality: 'Bandung', addressRegion: 'Jawa Barat', addressCountry: 'ID' },
   parentOrganization: { '@type': 'CollegeOrUniversity', name: 'School of Business and Management, Institut Teknologi Bandung' },

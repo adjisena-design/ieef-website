@@ -1,6 +1,6 @@
 # IEEF website
 
-Rebuild of [ieef.or.id](https://ieef.or.id) for the Institute for Energy, Economics & Finance, using the approved **Plan B** design (painted landscape + glass).
+Rebuild of [ieef.or.id](https://ieef.or.id) for the Institute for Energy, Economics, and Finance, using the approved **Plan B** design (painted landscape + glass).
 
 - **Stack:** [Astro](https://astro.build) (static HTML, free and open source) · Plus Jakarta Sans · Supabase for content and the team console (from step 2)
 - **Languages:** English at `/`, Bahasa Indonesia at `/id/` with an EN/ID toggle on every page
